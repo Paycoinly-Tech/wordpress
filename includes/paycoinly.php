@@ -3,6 +3,7 @@
 require_once plugin_dir_path(__FILE__) . 'constants.php';
 require_once plugin_dir_path(__FILE__) . 'paycoinly-wc-gateway.php';
 require_once plugin_dir_path(__FILE__) . 'block.php';
+require_once plugin_dir_path(__FILE__) . 'payment-token.php';
 
 class Paycoinly {
 
@@ -11,9 +12,6 @@ class Paycoinly {
     public function run() {
         add_shortcode(PAYCOINLY_ID, [$this, 'shortcode']);
 
-        add_action('init', [$this, 'register_hooks']);
-
-        // Add menu item
         $settings_slug = PAYCOINLY_ID . '-settings';
 
         add_action('admin_init', function () {
@@ -54,6 +52,26 @@ class Paycoinly {
             }
         );
 
+        add_action('rest_api_init', function () {
+            register_rest_route(PAYCOINLY_ID, '/process-payment', [
+                'methods'  => 'POST',
+                'callback' => [$this, 'payment_handler'],
+                'permission_callback' => '__return_true',
+            ]);
+
+            register_rest_route(PAYCOINLY_ID, '/process-payment/(?P<mode>[^/]+)', [
+                'methods'  => 'POST',
+                'callback' => [$this, 'payment_handler'],
+                'permission_callback' => '__return_true',
+            ]);
+
+            register_rest_route(PAYCOINLY_ID, '/order/(?P<id>[^/]+)', [
+                'methods'  => 'GET',
+                'callback' => [$this, 'get_payment_token'],
+                'permission_callback' => '__return_true',
+            ]);
+        });
+
         if (!class_exists('WC_Payment_Gateway')) {
             return;
         }
@@ -64,8 +82,79 @@ class Paycoinly {
         });
     }
 
-    public function register_hooks() {
-        // Hook registration
+    /**
+     * Url: https://yourstore.com/wp-json/paycoinly/order/{id}
+     */
+    function get_payment_token(WP_REST_Request $request)
+    {
+        $settings = get_option(PAYCOINLY_OPTION_KEY, []);
+        $order_id = $request->get_param('id');
+
+        $price = apply_filters(PAYCOINLY_FILTER_GET_PRICE, $order_id);
+        $token = payment_token(
+            $settings['payment_id'],
+            $order_id,
+            $price,
+            $settings['api_key']
+        );
+
+        return [
+            'result'   => 'success',
+            'redirect' => PAYCOINLY_DOMAIN . "/pay?token=${token}"
+        ];
+    }
+    
+    /**
+     * Url: https://yourstore.com/wp-json/paycoinly/process-payment/:mode
+     */
+    function payment_handler(WP_REST_Request $request)
+    {
+        $settings = get_option(PAYCOINLY_OPTION_KEY, []);
+        $api_key = $request->get_header('x-api-key');
+
+        if ($api_key !== $settings['api_key']) {
+            return new WP_REST_Response([
+                'error' => 'Unauthorized'
+            ], 401);
+        }
+
+        $payload = $request->get_json_params();
+        $mode = $request->get_param('mode');
+
+        if ($mode == 'wc') {
+            if (class_exists('WooCommerce')) {
+                if (apply_filters(PAYCOINLY_FILTER_BEFORE_HANDLE_WC_PAYMENT, $payload)) {
+                    $order = wc_get_order($payload['order_id']);
+    
+                    if (!$order) {
+                        return new WP_REST_Response([
+                            'error' => 'Order not found'
+                        ], 404);
+                    }
+    
+                    $order->payment_complete(
+                        PAYCOINLY_DOMAIN . "/tx/{$payload['txid']}"
+                    );
+    
+                    // Empty cart
+                    // WC()->cart->empty_cart();
+    
+                    $order->add_order_note(
+                        'Order processed'
+                    );
+                }
+            }
+        }
+
+        apply_filters(
+            PAYCOINLY_FILTER_HANDLE_PAYMENT,
+            $payload['order_id'],
+            $payload['user_id'],
+            $mode,
+            $payload,
+        );
+
+        return ['success' => true];
     }
 
     private function shortcode($atts) {

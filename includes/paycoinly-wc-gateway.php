@@ -3,7 +3,6 @@
 if (!defined('ABSPATH')) exit;
 
 require_once plugin_dir_path(__FILE__) . 'constants.php';
-require_once plugin_dir_path(__FILE__) . 'payment-token.php';
 
 class Paycoinly_WC extends WC_Payment_Gateway
 {
@@ -28,22 +27,6 @@ class Paycoinly_WC extends WC_Payment_Gateway
             'woocommerce_update_options_payment_gateways_' . $this->id,
             [$this, 'process_admin_options']
         );
-
-        add_action('rest_api_init', function () {
-
-            register_rest_route('paycoinly', '/process-payment', [
-                'methods'  => 'POST',
-                'callback' => [$this, 'payment_handler'],
-                'permission_callback' => '__return_true',
-            ]);
-
-            register_rest_route('paycoinly', '/order/(?P<id>\d+)', [
-                'methods'  => 'GET',
-                'callback' => [$this, 'get_payment_token'],
-                'permission_callback' => '__return_true',
-            ]);
-
-        });
     }
 
     public function process_payment($order_id)
@@ -60,65 +43,6 @@ class Paycoinly_WC extends WC_Payment_Gateway
             'result'   => 'success',
             'redirect' => PAYCOINLY_DOMAIN . "/pay?token=${token}"
         ];
-    }
-
-    /**
-     * Url: https://yourstore.com/wp-json/paycoinly/order/{id}
-     */
-    function get_payment_token(WP_REST_Request $request)
-    {
-        $order_id = $request->get_param('id');
-
-        // TODO: get price from order id
-
-        $token = payment_token(
-            $this->settings['payment_id'],
-            $order_id,
-            'price',
-            $this->settings['api_key']
-        );
-
-        return [
-            'result'   => 'success',
-            'redirect' => PAYCOINLY_DOMAIN . "/pay?token=${token}"
-        ];
-    }
-    
-    /**
-     * Url: https://yourstore.com/wp-json/paycoinly/process-payment
-     */
-    function payment_handler(WP_REST_Request $request)
-    {
-        $api_key = $request->get_header('x-api-key');
-
-        if ($api_key !== $this->settings['api_key']) {
-            return new WP_REST_Response([
-                'error' => 'Unauthorized'
-            ], 401);
-        }
-
-        $payload = $request->get_json_params();
-
-        $order = wc_get_order($payload['order_id']);
-
-        if (!$order) {
-            return new WP_REST_Response([
-                'error' => 'Order not found'
-            ], 404);
-        }
-
-        $order->payment_complete(
-            PAYCOINLY_DOMAIN . "/tx/{$payload['txid']}"
-        );
-
-        // Empty cart
-        // WC()->cart->empty_cart();
-
-        $order->add_order_note(
-            'Order processed'
-        );
-
-        return ['success' => true];
     }
 
     /**
