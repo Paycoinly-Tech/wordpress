@@ -37,7 +37,7 @@ class Paycoinly_WC extends WC_Payment_Gateway
     {
         $order = wc_get_order($order_id);
         $token = payment_token(
-            $this->settings['payment_id'],
+            $this->settings['wc_payment_id'],
             $order_id,
             $order->get_total(),
             $this->settings['api_key']
@@ -65,7 +65,7 @@ class Paycoinly_WC extends WC_Payment_Gateway
                 'type' => 'text',
             ],
 
-            'payment_id' => [
+            'wc_payment_id' => [
                 'title' => 'Payment ID',
                 'type' => 'text',
             ],

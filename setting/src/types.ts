@@ -4,4 +4,5 @@ export interface Payment {
   tokens: string[]
   type: string
   callbackUrl: string
+  disabled: boolean
 }

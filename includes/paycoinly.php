@@ -166,7 +166,6 @@ class Paycoinly
     {
         $atts = shortcode_atts(
             array(
-                'payment_id' => 'Guest',
                 'order_id' => '',
                 'class' => '',
                 'style' => '',

@@ -17,19 +17,15 @@ function inject_setting_view_script($settings, $option_key)
         true    
     );
 
-    $script = "window.__$"  . PAYCOINLY_ID . "_settings = " . json_encode($settings) . ";";
-
     if ($option_key) {
-        $script .= "window.__$"  . PAYCOINLY_ID . "_settings.option_key = '$option_key';";
+        $settings['option_key'] = $option_key;
 
         if (class_exists('WooCommerce')) {
-            $script .= "window.__$"  . PAYCOINLY_ID . "_settings.wc = true;";
+            $settings['wc'] = true;
         }
     }
 
-    wp_add_inline_script(
-        $script_handle,
-        $script,
-        'before'
-    );
+    $script = "window.__$"  . PAYCOINLY_ID . "_settings = " . json_encode($settings) . ";";
+
+    wp_add_inline_script($script_handle, $script, 'before');
 }
