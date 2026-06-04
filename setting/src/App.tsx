@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState } from 'react'
 import debounce from 'lodash/debounce'
-import type { Payment } from './types'
+import { CallbackType, type Payment } from './types'
 import { useQuery } from '@tanstack/react-query'
 import {
   Spinner,
@@ -13,7 +13,9 @@ import {
   Link,
   Text,
   RadioCard,
-  Group
+  Group,
+  Badge,
+  HStack
 } from '@chakra-ui/react'
 
 declare global {
@@ -40,19 +42,35 @@ const defaultValues = {
   wcPaymentId: window.__$paycoinly_settings?.wc_payment_id ?? ''
 }
 
+const DESIRED_TYPE = wcSetting
+  ? CallbackType.Woocommerce
+  : CallbackType.Wordpress
+
 const pid = wcSetting ? defaultValues.wcPaymentId : defaultValues.paymentId
 
 const PAYCOINLY_SERVER = 'https://ambx.vercel.app'
 // const PAYCOINLY_SERVER = 'http://localhost:3000'
 
-const fetchPayments = (apiKey: string, mode?: string) => {
-  let callbackUrl = `${window.location.origin}/wp-json/paycoinly/process-payment`
+const BASE_CALLBACK_URL = `${window.location.origin}/wp-json/paycoinly/process-payment`
 
-  if (mode) {
-    callbackUrl += '/' + mode
+const callbackType = (payment: Payment) => {
+  if (payment.type !== 'Regular') {
+    return CallbackType.Other
   }
 
-  return fetch(`${PAYCOINLY_SERVER}/v1/payments`, {
+  if (payment.callbackUrl === BASE_CALLBACK_URL + '/wc') {
+    return CallbackType.Woocommerce
+  }
+
+  if (payment.callbackUrl === BASE_CALLBACK_URL) {
+    return CallbackType.Wordpress
+  }
+
+  return CallbackType.Other
+}
+
+const fetchPayments = (apiKey: string) =>
+  fetch(`${PAYCOINLY_SERVER}/v1/payments`, {
     headers: {
       'x-api-key': apiKey
     }
@@ -61,10 +79,9 @@ const fetchPayments = (apiKey: string, mode?: string) => {
     .then((res: Payment[]) =>
       res.map((item) => ({
         ...item,
-        disabled: item.callbackUrl !== callbackUrl
+        type: callbackType(item)
       }))
     )
-}
 
 interface PaycoinlyDashboardLinkProps {
   link: 'new' | 'dashboard'
@@ -102,32 +119,31 @@ function App() {
     enabled: !!defaultValues.apiKey,
     queryKey: ['payments', defaultValues.apiKey, wcSetting],
     queryFn: () =>
-      fetchPayments(defaultValues.apiKey, wcSetting ? 'wc' : undefined).then(
-        (res) => {
-          if (res.length === 0) {
-            setErrorFromSavedValue(
-              <>
-                No payments found for the provided API key. Please check your
-                API key or add a new payment in{' '}
-                <PaycoinlyDashboardLink link="new" />.
-              </>
-            )
-          } else if (!res.some((item) => item.id === pid)) {
-            setErrorFromSavedValue('No payment is selected. Please select one.')
-          } else if (res.some((item) => item.id === pid && item.disabled)) {
-            setErrorFromSavedValue(
-              <>
-                Selected payment is not eligible for your
-                {wcSetting ? 'store' : 'site'}. Please select a different one,
-                or set the {wcSetting ? 'Woocommerce' : 'Wordpress'} option in{' '}
-                <PaycoinlyDashboardLink link="dashboard" />.
-              </>
-            )
-          }
-
-          return res
+      fetchPayments(defaultValues.apiKey).then((res) => {
+        if (res.length === 0) {
+          setErrorFromSavedValue(
+            <>
+              No payments found for the provided API key. Please check your API
+              key or add a new payment in <PaycoinlyDashboardLink link="new" />.
+            </>
+          )
+        } else if (!res.some((item) => item.id === pid)) {
+          setErrorFromSavedValue('No payment is selected. Please select one.')
+        } else if (
+          res.some((item) => item.id === pid && item.type !== DESIRED_TYPE)
+        ) {
+          setErrorFromSavedValue(
+            <>
+              Selected payment is not eligible for your
+              {wcSetting ? 'store' : 'site'}. Please select a different one, or
+              set the {wcSetting ? 'Woocommerce' : 'Wordpress'} option in{' '}
+              <PaycoinlyDashboardLink link="dashboard" />.
+            </>
+          )
         }
-      )
+
+        return res
+      })
   })
 
   const {
@@ -138,7 +154,7 @@ function App() {
     enabled: !!debouncedApiKey,
     refetchOnWindowFocus: false,
     queryKey: ['payments', debouncedApiKey, wcSetting],
-    queryFn: () => fetchPayments(debouncedApiKey, wcSetting ? 'wc' : undefined)
+    queryFn: () => fetchPayments(debouncedApiKey)
   })
 
   const debounced = useMemo(() => debounce(setDebouncedApiKey, 500), [])
@@ -281,11 +297,13 @@ function App() {
                     key={item.id}
                     value={item.id}
                     width="full"
-                    cursor={item.disabled ? 'not-allowed' : 'initial'}
-                    opacity={item.disabled ? 0.5 : 1}
+                    cursor={
+                      item.type === DESIRED_TYPE ? 'initial' : 'not-allowed'
+                    }
+                    opacity={item.type === DESIRED_TYPE ? 1 : 0.5}
                   >
                     <RadioCard.ItemHiddenInput
-                      disabled={item.disabled}
+                      disabled={item.type !== DESIRED_TYPE}
                       name={
                         optionKey ? `${optionKey}[payment_id]` : 'wc_payment_id'
                       }
@@ -293,7 +311,16 @@ function App() {
                     <RadioCard.ItemControl>
                       <RadioCard.ItemIndicator />
                       <RadioCard.ItemContent>
-                        <RadioCard.ItemText>{item.name}</RadioCard.ItemText>
+                        <HStack w="full">
+                          <RadioCard.ItemText>{item.name}</RadioCard.ItemText>
+                          {item.type === CallbackType.Wordpress ? (
+                            <Badge colorPalette="blue">Wordpress</Badge>
+                          ) : (
+                            item.type === CallbackType.Woocommerce && (
+                              <Badge colorPalette="orange">Woocommerce</Badge>
+                            )
+                          )}
+                        </HStack>
                         <RadioCard.ItemDescription>
                           {item.id}
                         </RadioCard.ItemDescription>
@@ -317,7 +344,7 @@ function App() {
                 </Alert.Content>
               </Alert.Root>
             )}
-            {payments.some((item) => item.disabled) && (
+            {payments.some((item) => item.type !== DESIRED_TYPE) && (
               <Text>
                 Some payments are disabled because they are not eligible for
                 your {wcSetting ? 'store' : 'site'}.
