@@ -197,7 +197,7 @@ class Paycoinly
                 settings_fields(PAYCOINLY_ID . '_setting_group');
                 ?>
 
-                <div class="form-table"><?php echo spinner() ?></div>
+                <div class="form-table" style="display: flex;"><?php echo spinner() ?></div>
                 <?php submit_button(); ?>
             </form>
         </div>

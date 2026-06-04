@@ -17,18 +17,19 @@ function inject_setting_view_script($settings, $option_key)
         true    
     );
 
+    $script = "window.__$"  . PAYCOINLY_ID . "_settings = " . json_encode($settings) . ";";
+
     if ($option_key) {
-        wp_add_inline_script(
-            $script_handle,
-            "window.__$"  . PAYCOINLY_ID . "_settings = " . json_encode($settings) . ";" .
-            "window.__$"  . PAYCOINLY_ID . "_settings.option_key = '$option_key';",
-            'before'
-        );
-    } else {
-        wp_add_inline_script(
-            $script_handle,
-            "window.__$"  . PAYCOINLY_ID . "_settings = " . json_encode($settings) . ";",
-            'before'
-        );
+        $script .= "window.__$"  . PAYCOINLY_ID . "_settings.option_key = '$option_key';";
+
+        if (class_exists('WooCommerce')) {
+            $script .= "window.__$"  . PAYCOINLY_ID . "_settings.wc = true;";
+        }
     }
+
+    wp_add_inline_script(
+        $script_handle,
+        $script,
+        'before'
+    );
 }
