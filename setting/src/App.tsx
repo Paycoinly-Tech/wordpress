@@ -347,10 +347,10 @@ function App() {
                 Some payments are disabled because they are not eligible for
                 your {wcSetting ? 'store' : 'site'}.
                 <br />
-                Please set the
-                {wcSetting ? 'Woocommerce' : 'Wordpress'}
-                option in the payment settings in{' '}
-                <PaycoinlyDashboardLink link="dashboard" /> to use them.
+                Please set the&nbsp;
+                {wcSetting ? 'Woocommerce' : 'Wordpress'}&nbsp; option in the
+                payment settings in <PaycoinlyDashboardLink link="dashboard" />{' '}
+                to use them.
               </Text>
             )}
           </Field.Root>
