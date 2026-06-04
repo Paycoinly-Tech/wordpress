@@ -8,14 +8,6 @@ require_once plugin_dir_path(__FILE__) . 'constants.php';
 function inject_setting_view_script($settings, $option_key)
 {
     $script_handle = PAYCOINLY_ID . '-setting-script';
-    $style_handle = PAYCOINLY_ID . '-setting-style';
-
-    wp_enqueue_style(
-        $style_handle,
-        plugin_dir_url(__FILE__) . '../setting/dist/assets/styles.css',
-        [],
-        '1.0.0'
-    );
 
     wp_enqueue_script(
         $script_handle,
