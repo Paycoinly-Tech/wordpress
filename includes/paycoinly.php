@@ -106,10 +106,12 @@ class Paycoinly
             $settings['api_key']
         );
 
-        return [
-            'result' => 'success',
-            'redirect' => PAYCOINLY_DOMAIN . "/pay?token={$token}"
-        ];
+        $response = new WP_REST_Response();
+
+        $response->set_status(302);
+        $response->header('Location', PAYCOINLY_DOMAIN . "/pay?token={$token}");
+
+        return $response;
     }
 
     /**
@@ -139,8 +141,8 @@ class Paycoinly
                         PAYCOINLY_ACTION_HANDLE_PAYMENT,
                         $payload['order_id'],
                         $payload['user_id'],
-                        $mode,
                         $payload,
+                        $mode,
                     );
 
                     return new WP_REST_Response([
@@ -163,14 +165,14 @@ class Paycoinly
             PAYCOINLY_ACTION_HANDLE_PAYMENT,
             $payload['order_id'],
             $payload['user_id'],
-            $mode,
             $payload,
+            $mode,
         );
 
         return ['success' => true];
     }
 
-    private function shortcode($atts)
+    public function shortcode($atts)
     {
         $atts = shortcode_atts(
             array(
@@ -186,8 +188,25 @@ class Paycoinly
         $render = "<button onclick=\"$onclick\" class=\"{$atts['class']}\" style=\"{$atts['style']}\">";
         $render .= "<img src='https://ambx.vercel.app/logo/light.svg' style='width: 150px;' />";
         $render .= "</button>";
+        ?>
 
-        return $render;
+            <script>
+                window.addEventListener('message', (event) => {
+                    if (event.origin !== '<?php echo PAYCOINLY_DOMAIN; ?>') {
+                        return;
+                    }
+
+                    if (event.data.type === 'PAYCOINLY_PAYMENT_COMPLETE') {
+                        <?php
+                        echo apply_filters(PAYCOINLY_FILTER_PAYMENT_SUCCESS_HANDLER, 'console.log(event.data.payload);')
+                            ?>
+
+                    }
+                });
+            </script>
+
+            <?php
+                return $render;
     }
 
     public function settings_page()

@@ -11,10 +11,7 @@ function inject_setting_view_script($settings, $option_key)
 
     wp_enqueue_script(
         $script_handle,
-        plugin_dir_url(__FILE__) . '../setting/dist/assets/index.js',
-        [],
-        '1.0.0',
-        true    
+        plugin_dir_url(__FILE__) . '../setting/dist/assets/index.js'
     );
 
     if ($option_key) {
@@ -25,7 +22,9 @@ function inject_setting_view_script($settings, $option_key)
         }
     }
 
-    $script = "window.__$"  . PAYCOINLY_ID . "_settings = " . json_encode($settings) . ";";
-
-    wp_add_inline_script($script_handle, $script, 'before');
+    wp_localize_script(
+        $script_handle,
+        '__$' . PAYCOINLY_ID . '_settings',
+        $settings
+    );
 }

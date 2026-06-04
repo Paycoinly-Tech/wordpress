@@ -134,6 +134,10 @@ function App() {
         ) {
           setErrorFromSavedValue(
             <>
+              <strong>
+                Your customers' payments are't recorded properly in your site.
+              </strong>
+              <br />
               Selected payment is not eligible for your
               {wcSetting ? 'store' : 'site'}. Please select a different one, or
               set the {wcSetting ? 'Woocommerce' : 'Wordpress'} option in{' '}
@@ -171,14 +175,8 @@ function App() {
         <Alert.Root status="error">
           <Alert.Indicator />
           <Alert.Content>
-            <Alert.Title>Warning, Immediate Action Required!</Alert.Title>
-            <Alert.Description>
-              <strong>
-                Your customers' payments are't recorded properly in your site.
-              </strong>
-              <br />
-              {errorFromSavedValue}
-            </Alert.Description>
+            <Alert.Title>Invalid Configuration</Alert.Title>
+            <Alert.Description>{errorFromSavedValue}</Alert.Description>
           </Alert.Content>
         </Alert.Root>
       )}
@@ -212,7 +210,7 @@ function App() {
             <input
               type="hidden"
               name={`${optionKey}[enabled]`}
-              checked={enabled}
+              value={enabled ? 'yes' : 'no'}
             />
             <input
               type="hidden"

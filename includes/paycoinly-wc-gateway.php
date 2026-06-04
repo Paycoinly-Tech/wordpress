@@ -78,7 +78,8 @@ class Paycoinly_WC extends WC_Payment_Gateway
         $this->settings['enabled'] = $this->settings['enabled'] ?? 'yes';
     }
 
-    public function generate_settings_html($form_fields = array(), $echo = true) {
+    public function generate_settings_html($form_fields = array(), $echo = true)
+    {
         inject_setting_view_script($this->settings, null);
 
         return spinner();
