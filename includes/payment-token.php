@@ -32,7 +32,7 @@ function payment_token($payment_id, $order_id, $price, $api_key)
     }
 
     $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    curl_close($ch);
+    unset($ch);
 
     if ($httpCode !== 200) {
         throw new Exception("HTTP error! Status: {$httpCode}");

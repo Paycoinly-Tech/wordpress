@@ -5,11 +5,15 @@ require_once plugin_dir_path(__FILE__) . 'paycoinly-wc-gateway.php';
 require_once plugin_dir_path(__FILE__) . 'block.php';
 require_once plugin_dir_path(__FILE__) . 'payment-token.php';
 
-class Paycoinly {
+class Paycoinly
+{
 
-    public function __construct() { }
+    public function __construct()
+    {
+    }
 
-    public function run() {
+    public function run()
+    {
         add_shortcode(PAYCOINLY_ID, [$this, 'shortcode']);
 
         $settings_slug = PAYCOINLY_ID . '-settings';
@@ -54,19 +58,19 @@ class Paycoinly {
 
         add_action('rest_api_init', function () {
             register_rest_route(PAYCOINLY_ID, '/process-payment', [
-                'methods'  => 'POST',
+                'methods' => 'POST',
                 'callback' => [$this, 'payment_handler'],
                 'permission_callback' => '__return_true',
             ]);
 
             register_rest_route(PAYCOINLY_ID, '/process-payment/(?P<mode>[^/]+)', [
-                'methods'  => 'POST',
+                'methods' => 'POST',
                 'callback' => [$this, 'payment_handler'],
                 'permission_callback' => '__return_true',
             ]);
 
             register_rest_route(PAYCOINLY_ID, '/order/(?P<id>[^/]+)', [
-                'methods'  => 'GET',
+                'methods' => 'GET',
                 'callback' => [$this, 'get_payment_token'],
                 'permission_callback' => '__return_true',
             ]);
@@ -90,7 +94,7 @@ class Paycoinly {
         $settings = get_option(PAYCOINLY_OPTION_KEY, []);
         $order_id = $request->get_param('id');
 
-        $price = apply_filters(PAYCOINLY_FILTER_GET_PRICE, $order_id);
+        $price = apply_filters(PAYCOINLY_FILTER_GET_ORDER_PRICE, $order_id);
         $token = payment_token(
             $settings['payment_id'],
             $order_id,
@@ -99,11 +103,11 @@ class Paycoinly {
         );
 
         return [
-            'result'   => 'success',
-            'redirect' => PAYCOINLY_DOMAIN . "/pay?token=${token}"
+            'result' => 'success',
+            'redirect' => PAYCOINLY_DOMAIN . "/pay?token={$token}"
         ];
     }
-    
+
     /**
      * Url: https://yourstore.com/wp-json/paycoinly/process-payment/:mode
      */
@@ -123,26 +127,25 @@ class Paycoinly {
 
         if ($mode == 'wc') {
             if (class_exists('WooCommerce')) {
-                if (apply_filters(PAYCOINLY_FILTER_BEFORE_HANDLE_WC_PAYMENT, $payload)) {
-                    $order = wc_get_order($payload['order_id']);
-    
-                    if (!$order) {
-                        return new WP_REST_Response([
-                            'error' => 'Order not found'
-                        ], 404);
-                    }
-    
-                    $order->payment_complete(
-                        PAYCOINLY_DOMAIN . "/tx/{$payload['txid']}"
-                    );
-    
-                    // Empty cart
-                    // WC()->cart->empty_cart();
-    
-                    $order->add_order_note(
-                        'Order processed'
-                    );
+                apply_filters(PAYCOINLY_FILTER_BEFORE_HANDLE_WC_PAYMENT, $payload);
+                $order = wc_get_order($payload['order_id']);
+
+                if (!$order) {
+                    return new WP_REST_Response([
+                        'error' => 'Order not found'
+                    ], 404);
                 }
+
+                $order->payment_complete(
+                    PAYCOINLY_DOMAIN . "/tx/{$payload['txid']}"
+                );
+
+                // Empty cart
+                // WC()->cart->empty_cart();
+
+                $order->add_order_note(
+                    'Order processed'
+                );
             }
         }
 
@@ -157,7 +160,8 @@ class Paycoinly {
         return ['success' => true];
     }
 
-    private function shortcode($atts) {
+    private function shortcode($atts)
+    {
         $atts = shortcode_atts(
             array(
                 'payment_id' => 'Guest',
@@ -169,50 +173,51 @@ class Paycoinly {
         );
 
         $url = get_rest_url(null, "paycoinly/order/{$atts['order_id']}");
-        $onclick = "window.open('{$url}', 'Pay with PayCoinly', 'width=800,height=550,left=200,top=100')";
-        $render = "<button onclick=\"{$onclick}\" class=\"{$atts['class']}\" style=\"{$atts['style']}\">";
+        $onclick = "window.open('$url', 'Pay with PayCoinly', 'width=800,height=550,left=200,top=100')";
+        $render = "<button onclick=\"$onclick\" class=\"{$atts['class']}\" style=\"{$atts['style']}\">";
         $render .= "<img src='https://ambx.vercel.app/logo/light.svg' style='width: 150px;' />";
         $render .= "</button>";
 
         return $render;
     }
 
-    public function settings_page() {
+    public function settings_page()
+    {
 
         $settings = get_option(PAYCOINLY_OPTION_KEY, []);
 
         ?>
-        <div class="wrap">
-            <h1><?php echo PAYCOINLY_TITLE; ?> Settings</h1>
-            <style>
-                .paycoinly_settings_form {
-                    margin-top: 1em;
-                }
-                .paycoinly_settings_container label {
-                    display: grid;
-                    gap: .5em;
-                    margin-bottom: 1em;
-                }
-            </style>
-            <form method="post" action="options.php" class='paycoinly_settings_form'>
-                <?php
-                settings_fields(PAYCOINLY_ID . '_setting_group');
-                ?>
+                        <div class="wrap">
+                            <h1><?php echo PAYCOINLY_TITLE; ?> Settings</h1>
+                            <style>
+                                .paycoinly_settings_form {
+                                    margin-top: 1em;
+                                }
+                                .paycoinly_settings_container label {
+                                    display: grid;
+                                    gap: .5em;
+                                    margin-bottom: 1em;
+                                }
+                            </style>
+                            <form method="post" action="options.php" class='paycoinly_settings_form'>
+                                <?php
+                                settings_fields(PAYCOINLY_ID . '_setting_group');
+                                ?>
 
-                <div class='paycoinly_settings_container'>
-                    <label>
-                        API Key
-                        <input
-                            type="text"
-                            name="<?php echo PAYCOINLY_OPTION_KEY; ?>[api_key]"
-                            value="<?php echo esc_attr($settings['api_key'] ?? ''); ?>"
-                            class="regular-text"
-                        />
-                    </label>
-                </div>
-                <?php submit_button(); ?>
-            </form>
-        </div>
-        <?php
+                                <div class='paycoinly_settings_container'>
+                                    <label>
+                                        API Key
+                                        <input
+                                            type="text"
+                                            name="<?php echo PAYCOINLY_OPTION_KEY; ?>[api_key]"
+                                            value="<?php echo esc_attr($settings['api_key'] ?? ''); ?>"
+                                            class="regular-text"
+                                        />
+                                    </label>
+                                </div>
+                                <?php submit_button(); ?>
+                            </form>
+                        </div>
+                        <?php
     }
 }
