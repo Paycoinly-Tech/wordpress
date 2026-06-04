@@ -50,7 +50,7 @@ class Paycoinly
         );
 
         add_filter(
-            'plugin_action_links',
+            'plugin_action_links_' . plugin_basename(dirname(__DIR__)) . '/' . PAYCOINLY_ID . '.php',
             function ($links) use ($settings_slug) {
                 $settings_link = '<a href="' . admin_url('admin.php?page=' . $settings_slug) . '">Settings</a>';
 
