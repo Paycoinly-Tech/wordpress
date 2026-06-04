@@ -4,6 +4,8 @@ if (!defined('ABSPATH'))
     exit;
 
 require_once plugin_dir_path(__FILE__) . 'constants.php';
+require_once plugin_dir_path(__FILE__) . 'inject-setting-view-script.php';
+require_once plugin_dir_path(__FILE__) . 'ui.php';
 
 class Paycoinly_WC extends WC_Payment_Gateway
 {
@@ -23,6 +25,7 @@ class Paycoinly_WC extends WC_Payment_Gateway
         $this->init_form_fields();
 
         $this->title = 'Paycoinly';
+        $this->icon = 'https://app.paycoinly.xyz/favicon.ico';
 
         add_action(
             'woocommerce_update_options_payment_gateways_' . $this->id,
@@ -55,24 +58,30 @@ class Paycoinly_WC extends WC_Payment_Gateway
             'enabled' => [
                 'title' => 'Active',
                 'type' => 'checkbox',
-                'description' => 'Activate Paycoinly Gateway',
-                'default' => $this->settings['enabled'] ?? 'yes',
             ],
 
             'api_key' => [
                 'title' => 'API Key',
                 'type' => 'text',
-                'description' => 'Enter your Paycoinly API Key',
-                'default' => '',
             ],
 
             'payment_id' => [
                 'title' => 'Payment ID',
                 'type' => 'text',
-                'description' => 'Enter your Paycoinly Payment Id',
-                'default' => '',
             ],
         ];
+    }
+
+    public function init_settings()
+    {
+        parent::init_settings();
+        $this->settings['enabled'] = $this->settings['enabled'] ?? 'yes';
+    }
+
+    public function generate_settings_html($form_fields = array(), $echo = true) {
+        inject_setting_view_script($this->settings, null);
+
+        return spinner();
     }
 
     public function get_field_key($key)

@@ -1,13 +1,17 @@
 <?php
 
+if (!defined('ABSPATH'))
+    exit;
+
 require_once plugin_dir_path(__FILE__) . 'constants.php';
 require_once plugin_dir_path(__FILE__) . 'paycoinly-wc-gateway.php';
 require_once plugin_dir_path(__FILE__) . 'block.php';
 require_once plugin_dir_path(__FILE__) . 'payment-token.php';
+require_once plugin_dir_path(__FILE__) . 'ui.php';
+require_once plugin_dir_path(__FILE__) . 'inject-setting-view-script.php';
 
 class Paycoinly
 {
-
     public function __construct()
     {
     }
@@ -127,7 +131,7 @@ class Paycoinly
 
         if ($mode == 'wc') {
             if (class_exists('WooCommerce')) {
-                apply_filters(PAYCOINLY_FILTER_BEFORE_HANDLE_WC_PAYMENT, $payload);
+                do_action(PAYCOINLY_ACTION_BEFORE_HANDLE_WC_PAYMENT, $payload);
                 $order = wc_get_order($payload['order_id']);
 
                 if (!$order) {
@@ -136,9 +140,7 @@ class Paycoinly
                     ], 404);
                 }
 
-                $order->payment_complete(
-                    PAYCOINLY_DOMAIN . "/tx/{$payload['txid']}"
-                );
+                $order->payment_complete($payload['txLink']);
 
                 // Empty cart
                 // WC()->cart->empty_cart();
@@ -149,8 +151,8 @@ class Paycoinly
             }
         }
 
-        apply_filters(
-            PAYCOINLY_FILTER_HANDLE_PAYMENT,
+        do_action(
+            PAYCOINLY_ACTION_HANDLE_PAYMENT,
             $payload['order_id'],
             $payload['user_id'],
             $mode,
@@ -183,41 +185,22 @@ class Paycoinly
 
     public function settings_page()
     {
-
         $settings = get_option(PAYCOINLY_OPTION_KEY, []);
 
-        ?>
-                        <div class="wrap">
-                            <h1><?php echo PAYCOINLY_TITLE; ?> Settings</h1>
-                            <style>
-                                .paycoinly_settings_form {
-                                    margin-top: 1em;
-                                }
-                                .paycoinly_settings_container label {
-                                    display: grid;
-                                    gap: .5em;
-                                    margin-bottom: 1em;
-                                }
-                            </style>
-                            <form method="post" action="options.php" class='paycoinly_settings_form'>
-                                <?php
-                                settings_fields(PAYCOINLY_ID . '_setting_group');
-                                ?>
+        inject_setting_view_script($settings, PAYCOINLY_OPTION_KEY);
 
-                                <div class='paycoinly_settings_container'>
-                                    <label>
-                                        API Key
-                                        <input
-                                            type="text"
-                                            name="<?php echo PAYCOINLY_OPTION_KEY; ?>[api_key]"
-                                            value="<?php echo esc_attr($settings['api_key'] ?? ''); ?>"
-                                            class="regular-text"
-                                        />
-                                    </label>
-                                </div>
-                                <?php submit_button(); ?>
-                            </form>
-                        </div>
-                        <?php
+        ?>
+        <div class="wrap">
+            <h1><?php echo PAYCOINLY_TITLE; ?> Settings</h1>
+            <form method="post" action="options.php" class='paycoinly_settings_form'>
+                <?php
+                settings_fields(PAYCOINLY_ID . '_setting_group');
+                ?>
+
+                <table class="form-table"><?php echo spinner() ?></table>
+                <?php submit_button(); ?>
+            </form>
+        </div>
+        <?php
     }
 }
