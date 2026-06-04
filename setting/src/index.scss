@@ -1,0 +1,15 @@
+.PaycoinlySetting {
+  &__ApiKey {
+    display: flex;
+    gap: 1em;
+    align-items: center;
+
+    &__Spinner {
+      visibility: hidden;
+
+      &--visible {
+        visibility: visible;
+      }
+    }
+  }
+}

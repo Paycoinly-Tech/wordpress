@@ -1,5 +1,6 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useState, useTransition } from "react";
 import debounce from "lodash/debounce";
+import Spinner from "./Spinner";
 
 declare global {
   interface Window {
@@ -13,16 +14,29 @@ declare global {
 
 const wcSetting = !window.__$paycoinly_settings?.option_key;
 
+// const PAYCOINLY_SERVER = 'https://ambx.vercel.app'
+const PAYCOINLY_SERVER = "http://localhost:3000";
+
 function App() {
   const [enabled, setEnabled] = useState(
     window.__$paycoinly_settings?.enabled === "yes",
   );
-  const [apiKey, setApiKey] = useState(window.__$paycoinly_settings?.api_key);
+  const [apiKey, setApiKey] = useState(
+    window.__$paycoinly_settings?.api_key ?? "",
+  );
+
+  const [isPending, makeRequest] = useTransition();
 
   const debounced = useMemo(
     () =>
       debounce((value: string) => {
-        console.log(value);
+        makeRequest(() =>
+          fetch(`${PAYCOINLY_SERVER}/v1/payments`, {
+            headers: {
+              "x-api-key": value,
+            },
+          }).then((res) => res.json()),
+        );
       }, 500),
     [],
   );
@@ -34,13 +48,13 @@ function App() {
     }, []);
 
   return (
-    <tbody>
+    <tbody className="PaycoinlySetting">
       {wcSetting && (
         <tr vertical-align="top">
           <th scope="row" className="titledesc">
             <label htmlFor="enabled">Active</label>
           </th>
-          <td className="forminp">
+          <td>
             <label>
               <input
                 type="checkbox"
@@ -65,20 +79,29 @@ function App() {
         <th scope="row" className="titledesc">
           <label htmlFor="api_key">API Key</label>
         </th>
-        <td className="forminp">
-          <input
-            className="input-text regular-input "
-            type="text"
-            name={
-              window.__$paycoinly_settings?.option_key
-                ? `${window.__$paycoinly_settings.option_key}[api_key]`
-                : "api_key"
-            }
-            id="api_key"
-            placeholder=""
-            value={apiKey}
-            onChange={handleApiKeyChange}
-          />
+        <td>
+          <div className="PaycoinlySetting__ApiKey">
+            <input
+              type="text"
+              style={{ width: "100%" }}
+              name={
+                window.__$paycoinly_settings?.option_key
+                  ? `${window.__$paycoinly_settings.option_key}[api_key]`
+                  : "api_key"
+              }
+              id="api_key"
+              placeholder=""
+              value={apiKey}
+              onChange={handleApiKeyChange}
+            />
+            <Spinner
+              className={
+                isPending
+                  ? "PaycoinlySetting__ApiKey__Spinner--visible"
+                  : "PaycoinlySetting__ApiKey__Spinner"
+              }
+            />
+          </div>
           <p className="description">Enter your Paycoinly API Key</p>
         </td>
       </tr>

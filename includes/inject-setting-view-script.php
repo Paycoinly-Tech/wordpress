@@ -7,8 +7,18 @@ require_once plugin_dir_path(__FILE__) . 'constants.php';
 
 function inject_setting_view_script($settings, $option_key)
 {
+    $script_handle = PAYCOINLY_ID . '-setting-script';
+    $style_handle = PAYCOINLY_ID . '-setting-style';
+
+    wp_enqueue_style(
+        $style_handle,
+        plugin_dir_url(__FILE__) . '../setting/dist/assets/styles.css',
+        [],
+        '1.0.0'
+    );
+
     wp_enqueue_script(
-        PAYCOINLY_ID . '-script',
+        $script_handle,
         plugin_dir_url(__FILE__) . '../setting/dist/assets/index.js',
         [],
         '1.0.0',
@@ -17,14 +27,14 @@ function inject_setting_view_script($settings, $option_key)
 
     if ($option_key) {
         wp_add_inline_script(
-            PAYCOINLY_ID . '-script',
+            $script_handle,
             "window.__$"  . PAYCOINLY_ID . "_settings = " . json_encode($settings) . ";" .
             "window.__$"  . PAYCOINLY_ID . "_settings.option_key = '$option_key';",
             'before'
         );
     } else {
         wp_add_inline_script(
-            PAYCOINLY_ID . '-script',
+            $script_handle,
             "window.__$"  . PAYCOINLY_ID . "_settings = " . json_encode($settings) . ";",
             'before'
         );
