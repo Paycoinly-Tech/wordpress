@@ -135,8 +135,16 @@ class Paycoinly
                 $order = wc_get_order($payload['order_id']);
 
                 if (!$order) {
+                    do_action(
+                        PAYCOINLY_ACTION_HANDLE_PAYMENT,
+                        $payload['order_id'],
+                        $payload['user_id'],
+                        $mode,
+                        $payload,
+                    );
+
                     return new WP_REST_Response([
-                        'error' => 'Order not found'
+                        'error' => 'Woocommerce order not found'
                     ], 404);
                 }
 

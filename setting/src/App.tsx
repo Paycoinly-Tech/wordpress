@@ -45,8 +45,14 @@ const pid = wcSetting ? defaultValues.wcPaymentId : defaultValues.paymentId
 const PAYCOINLY_SERVER = 'https://ambx.vercel.app'
 // const PAYCOINLY_SERVER = 'http://localhost:3000'
 
-const fetchPayments = (apiKey: string) =>
-  fetch(`${PAYCOINLY_SERVER}/v1/payments`, {
+const fetchPayments = (apiKey: string, mode?: string) => {
+  let callbackUrl = `${window.location.origin}/wp-json/paycoinly/process-payment`
+
+  if (mode) {
+    callbackUrl += '/' + mode
+  }
+
+  return fetch(`${PAYCOINLY_SERVER}/v1/payments`, {
     headers: {
       'x-api-key': apiKey
     }
@@ -55,11 +61,10 @@ const fetchPayments = (apiKey: string) =>
     .then((res: Payment[]) =>
       res.map((item) => ({
         ...item,
-        disabled: !item.callbackUrl?.startsWith(
-          `${window.location.origin}/wp-json/paycoinly/process-payment`
-        )
+        disabled: item.callbackUrl !== callbackUrl
       }))
     )
+}
 
 interface PaycoinlyDashboardLinkProps {
   link: 'new' | 'dashboard'
@@ -95,28 +100,34 @@ function App() {
   useQuery({
     refetchOnWindowFocus: false,
     enabled: !!defaultValues.apiKey,
-    queryKey: ['payments', defaultValues.apiKey],
+    queryKey: ['payments', defaultValues.apiKey, wcSetting],
     queryFn: () =>
-      fetchPayments(defaultValues.apiKey).then((res) => {
-        if (res.length === 0) {
-          setErrorFromSavedValue(
-            <>
-              No payments found for the provided API key. Please check your API
-              key or add a new payment in <PaycoinlyDashboardLink link="new" />.
-            </>
-          )
-        } else if (!res.some((item) => item.id === pid)) {
-          setErrorFromSavedValue(
-            'Selected payment is invalid. Please select a different one.'
-          )
-        } else if (res.some((item) => item.id === pid && item.disabled)) {
-          setErrorFromSavedValue(
-            `Selected payment is not eligible for your ${wcSetting ? 'store' : 'site'}. Please select a different one, or set the Wordpress option in Paycoinly dashboard.`
-          )
-        }
+      fetchPayments(defaultValues.apiKey, wcSetting ? 'wc' : undefined).then(
+        (res) => {
+          if (res.length === 0) {
+            setErrorFromSavedValue(
+              <>
+                No payments found for the provided API key. Please check your
+                API key or add a new payment in{' '}
+                <PaycoinlyDashboardLink link="new" />.
+              </>
+            )
+          } else if (!res.some((item) => item.id === pid)) {
+            setErrorFromSavedValue('No payment is selected. Please select one.')
+          } else if (res.some((item) => item.id === pid && item.disabled)) {
+            setErrorFromSavedValue(
+              <>
+                Selected payment is not eligible for your
+                {wcSetting ? 'store' : 'site'}. Please select a different one,
+                or set the {wcSetting ? 'Woocommerce' : 'Wordpress'} option in{' '}
+                <PaycoinlyDashboardLink link="dashboard" />.
+              </>
+            )
+          }
 
-        return res
-      })
+          return res
+        }
+      )
   })
 
   const {
@@ -126,8 +137,8 @@ function App() {
   } = useQuery<Payment[]>({
     enabled: !!debouncedApiKey,
     refetchOnWindowFocus: false,
-    queryKey: ['payments', debouncedApiKey],
-    queryFn: () => fetchPayments(debouncedApiKey)
+    queryKey: ['payments', debouncedApiKey, wcSetting],
+    queryFn: () => fetchPayments(debouncedApiKey, wcSetting ? 'wc' : undefined)
   })
 
   const debounced = useMemo(() => debounce(setDebouncedApiKey, 500), [])
@@ -147,7 +158,7 @@ function App() {
             <Alert.Title>Warning, Immediate Action Required!</Alert.Title>
             <Alert.Description>
               <strong>
-                Your customers' payments won't be recorded in your site.
+                Your customers' payments are't recorded properly in your site.
               </strong>
               <br />
               {errorFromSavedValue}
@@ -172,12 +183,27 @@ function App() {
           </Field.Root>
         )}
 
-        {!wcSetting && (
-          <input
-            type="hidden"
-            name={`${optionKey}[enabled]`}
-            checked={enabled}
-          />
+        {wcSetting ? (
+          <>
+            <input
+              type="hidden"
+              name={`${optionKey}[payment_id]`}
+              value={defaultValues.paymentId}
+            />
+          </>
+        ) : (
+          <>
+            <input
+              type="hidden"
+              name={`${optionKey}[enabled]`}
+              checked={enabled}
+            />
+            <input
+              type="hidden"
+              name={`${optionKey}[wc_payment_id]`}
+              value={defaultValues.wcPaymentId}
+            />
+          </>
         )}
 
         <Field.Root>
@@ -294,7 +320,10 @@ function App() {
             {payments.some((item) => item.disabled) && (
               <Text>
                 Some payments are disabled because they are not eligible for
-                your {wcSetting ? 'store' : 'site'}. Please set the WordPress
+                your {wcSetting ? 'store' : 'site'}.
+                <br />
+                Please set the
+                {wcSetting ? 'Woocommerce' : 'Wordpress'}
                 option in the payment settings in{' '}
                 <PaycoinlyDashboardLink link="dashboard" /> to use them.
               </Text>
