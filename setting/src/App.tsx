@@ -28,6 +28,7 @@ declare global {
 
       option_key?: string
       wc?: boolean
+      server_url: string
     }
   }
 }
@@ -48,8 +49,7 @@ const DESIRED_TYPE = wcSetting
 
 const pid = wcSetting ? defaultValues.wcPaymentId : defaultValues.paymentId
 
-const PAYCOINLY_SERVER = 'https://ambx.vercel.app'
-// const PAYCOINLY_SERVER = 'http://localhost:3000'
+const PAYCOINLY_SERVER = window.__$paycoinly_settings?.server_url
 
 const BASE_CALLBACK_URL = `${window.location.origin}/wp-json/paycoinly/process-payment`
 

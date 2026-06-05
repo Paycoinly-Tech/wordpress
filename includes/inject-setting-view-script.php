@@ -14,12 +14,14 @@ function inject_setting_view_script($settings, $option_key)
         plugin_dir_url(__FILE__) . '../setting/dist/assets/index.js'
     );
 
+    $settings['server_url'] = PAYCOINLY_DOMAIN;
+
     if ($option_key) {
         $settings['option_key'] = $option_key;
+    }
 
-        if (class_exists('WooCommerce')) {
-            $settings['wc'] = true;
-        }
+    if (class_exists('WooCommerce')) {
+        $settings['wc'] = true;
     }
 
     wp_localize_script(

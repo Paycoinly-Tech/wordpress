@@ -179,6 +179,7 @@ class Paycoinly
                 'order_id' => '',
                 'class' => '',
                 'style' => '',
+                'html' => "<img src='https://" . PAYCOINLY_DOMAIN . "/logo/light.svg' style='width: 150px;' />",
             ),
             $atts,
         );
@@ -186,7 +187,7 @@ class Paycoinly
         $url = get_rest_url(null, "paycoinly/order/{$atts['order_id']}");
         $onclick = "window.open('$url', 'Pay with PayCoinly', 'width=800,height=550,left=200,top=100')";
         $render = "<button onclick=\"$onclick\" class=\"{$atts['class']}\" style=\"{$atts['style']}\">";
-        $render .= "<img src='https://ambx.vercel.app/logo/light.svg' style='width: 150px;' />";
+        $render .= $atts['html'];
         $render .= "</button>";
         ?>
 
