@@ -2,10 +2,18 @@
 
 require_once plugin_dir_path(__FILE__) . 'constants.php';
 
-function payment_token($payment_id, $order_id, $price, $api_key)
+function payment_token(
+    $payment_id,
+    $order_id,
+    $price,
+    $currency,
+    $local_currency,
+    $api_key)
 {
     $data = [
         'price' => $price,
+        'currency'=> $currency,
+        'localCurrency' => $local_currency,
         'metadata' => [
             'order_id' => $order_id,
             'user_id' => get_current_user_id()

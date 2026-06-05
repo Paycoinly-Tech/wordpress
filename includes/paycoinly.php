@@ -98,11 +98,12 @@ class Paycoinly
         $settings = get_option(PAYCOINLY_OPTION_KEY, []);
         $order_id = $request->get_param('id');
 
-        $price = apply_filters(PAYCOINLY_FILTER_GET_ORDER_PRICE, $order_id);
         $token = payment_token(
             $settings['payment_id'],
             $order_id,
-            $price,
+            apply_filters(PAYCOINLY_FILTER_ORDER_PRICE, $order_id),
+            'usd',
+            'usd',
             $settings['api_key']
         );
 
