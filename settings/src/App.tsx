@@ -350,7 +350,7 @@ function App() {
               outline="none"
               color="orange"
             >
-              Paycoinly plugin setting
+              Paycoinly plugin settings
             </Link>{' '}
             page.
           </Text>
@@ -364,7 +364,7 @@ function App() {
                 outline="none"
                 color="orange"
               >
-                WooCommerce Paycoinly gateway setting
+                WooCommerce Paycoinly gateway settings
               </Link>{' '}
               page.
             </Text>
