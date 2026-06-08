@@ -199,6 +199,13 @@ class Paycoinly
         $url = get_rest_url(null, "paycoinly/order/{$atts['order_id']}");
 
         if ($atts["redirect"]) {
+            $parsed = parse_url($atts['redirect']);
+
+            if (!isset($parsed['scheme']) || !isset($parsed['host'])) {
+                $host = $_SERVER['HTTP_HOST'];
+                $atts["redirect"] = "https://{$host}/" . ltrim($atts["redirect"], '/');
+            }
+
             $url = get_rest_url(null, "paycoinly/order/{$atts['order_id']}?redirect={$atts['redirect']}");
         }
 
