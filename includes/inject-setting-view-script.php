@@ -11,7 +11,7 @@ function inject_setting_view_script($settings, $option_key)
 
     wp_enqueue_script(
         $script_handle,
-        plugin_dir_url(__FILE__) . '../setting/dist/assets/index.js'
+        plugin_dir_url(__FILE__) . '../assets/settings.js'
     );
 
     $settings['server_url'] = PAYCOINLY_DOMAIN;

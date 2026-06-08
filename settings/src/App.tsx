@@ -18,21 +18,6 @@ import {
   HStack
 } from '@chakra-ui/react'
 
-declare global {
-  interface Window {
-    __$paycoinly_settings: {
-      enabled: string
-      api_key: string
-      payment_id: string
-      wc_payment_id: string
-
-      option_key?: string
-      wc?: boolean
-      server_url: string
-    }
-  }
-}
-
 const optionKey = window.__$paycoinly_settings?.option_key
 const wcSetting = !optionKey
 

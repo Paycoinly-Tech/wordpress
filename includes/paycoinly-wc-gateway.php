@@ -47,7 +47,7 @@ class Paycoinly_WC extends WC_Payment_Gateway
 
         return [
             'result' => 'success',
-            'redirect' => PAYCOINLY_DOMAIN . "/pay?token={$token}"
+            // 'redirect' => PAYCOINLY_DOMAIN . "/pay?token={$token}"
         ];
     }
 
