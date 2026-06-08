@@ -11,7 +11,7 @@ function payment_token(
     $api_key)
 {
     $data = [
-        'price' => $price,
+        'price' => floatval($price),
         'currency'=> $currency,
         'localCurrency' => $local_currency,
         'metadata' => [
@@ -40,6 +40,7 @@ function payment_token(
     }
 
     $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
     unset($ch);
 
     if ($httpCode !== 200) {
@@ -47,5 +48,6 @@ function payment_token(
     }
 
     $result = json_decode($response, true);
+
     return $result['token'];
 }

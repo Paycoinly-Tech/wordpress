@@ -36,18 +36,21 @@ class Paycoinly_WC extends WC_Payment_Gateway
     public function process_payment($order_id)
     {
         $order = wc_get_order($order_id);
+
+        $thank_you = $order->get_checkout_order_received_url();
+
         $token = payment_token(
             $this->settings['wc_payment_id'],
             $order_id,
             $order->get_total(),
-            $order->get_currency() ?? 'usd',
-            $order->get_currency() ?? 'usd',
+            $order->get_currency() ?? 'USD',
+            $order->get_currency() ?? 'USD',
             $this->settings['api_key']
         );
 
         return [
             'result' => 'success',
-            'redirect' => PAYCOINLY_DOMAIN . "/pay?token={$token}"
+            'redirect' => PAYCOINLY_DOMAIN . "/pay?token={$token}&redirect={$thank_you}"
         ];
     }
 

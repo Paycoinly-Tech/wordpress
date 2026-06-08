@@ -102,15 +102,24 @@ class Paycoinly
             $settings['payment_id'],
             $order_id,
             apply_filters(PAYCOINLY_FILTER_ORDER_PRICE, $order_id),
-            'usd',
-            'usd',
+            'USD',
+            'USD',
             $settings['api_key']
         );
 
         $response = new WP_REST_Response();
 
         $response->set_status(302);
-        $response->header('Location', PAYCOINLY_DOMAIN . "/pay?token={$token}");
+
+        $location = "/pay?token={$token}";
+
+        $redirect = $request->get_param("redirect");
+
+        if ($redirect) {
+            $location = add_query_arg(["redirect" => $redirect], $location);
+        }
+
+        $response->header('Location', PAYCOINLY_DOMAIN . $location);
 
         return $response;
     }
@@ -178,15 +187,27 @@ class Paycoinly
         $atts = shortcode_atts(
             array(
                 'order_id' => '',
+                'on_complete' => 'console.log(event.data.payload);',
+                'redirect' => '',
                 'class' => '',
                 'style' => '',
-                'html' => "<img src='https://" . PAYCOINLY_DOMAIN . "/logo/light.svg' style='width: 150px;' />",
+                'html' => "<img src='" . PAYCOINLY_DOMAIN . "/logo/dark.svg' style='width: 5em;' />",
             ),
             $atts,
         );
 
         $url = get_rest_url(null, "paycoinly/order/{$atts['order_id']}");
+
+        if ($atts["redirect"]) {
+            $url = get_rest_url(null, "paycoinly/order/{$atts['order_id']}?redirect={$atts['redirect']}");
+        }
+
         $onclick = "window.open('$url', 'Pay with PayCoinly', 'width=800,height=550,left=200,top=100')";
+
+        if ($atts["redirect"]) {
+            $onclick = "location.href = '$url'";
+        }
+
         $render = "<button onclick=\"$onclick\" class=\"{$atts['class']}\" style=\"{$atts['style']}\">";
         $render .= $atts['html'];
         $render .= "</button>";
@@ -200,7 +221,7 @@ class Paycoinly
 
                     if (event.data.type === 'PAYCOINLY_PAYMENT_COMPLETE') {
                         <?php
-                        echo apply_filters(PAYCOINLY_FILTER_PAYMENT_SUCCESS_HANDLER, 'console.log(event.data.payload);')
+                        echo $atts['on_complete'];
                             ?>
 
                     }
