@@ -204,11 +204,11 @@ class Paycoinly
         $onclick = "window.open('$url', 'Pay with PayCoinly', 'width=800,height=550,left=200,top=100')";
 
         if ($atts["redirect"]) {
-            $onclick = "location.href = '$url'";
+            $onclick = "location.href='$url'";
         }
 
         $render = "<button onclick=\"$onclick\" class=\"{$atts['class']}\" style=\"{$atts['style']}\">";
-        $render .= $atts['html'];
+        $render .= html_entity_decode($atts['html']);
         $render .= "</button>";
         ?>
 
