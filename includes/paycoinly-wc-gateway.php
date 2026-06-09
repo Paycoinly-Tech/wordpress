@@ -45,6 +45,7 @@ class Paycoinly_WC extends WC_Payment_Gateway
             $order->get_total(),
             $order->get_currency() ?? 'USD',
             $order->get_currency() ?? 'USD',
+            'wc',
             $this->settings['api_key']
         );
 

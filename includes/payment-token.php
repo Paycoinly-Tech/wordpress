@@ -8,6 +8,7 @@ function payment_token(
     $price,
     $currency,
     $local_currency,
+    $mode,
     $api_key)
 {
     $data = [
@@ -16,7 +17,8 @@ function payment_token(
         'localCurrency' => $local_currency,
         'metadata' => [
             'order_id' => $order_id,
-            'user_id' => get_current_user_id()
+            'user_id' => get_current_user_id(),
+            'mode' => $mode,
         ]
     ];
 

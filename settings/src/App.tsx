@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState } from 'react'
 import debounce from 'lodash/debounce'
-import { CallbackType, type Payment } from './types'
+import type { Payment, PaymentRaw } from './types'
 import { useQuery } from '@tanstack/react-query'
 import {
   Spinner,
@@ -14,7 +14,6 @@ import {
   Text,
   RadioCard,
   Group,
-  Badge,
   HStack
 } from '@chakra-ui/react'
 
@@ -28,31 +27,9 @@ const defaultValues = {
   wcPaymentId: window.__$paycoinly_settings?.wc_payment_id ?? ''
 }
 
-const DESIRED_TYPE = wcSetting
-  ? CallbackType.Woocommerce
-  : CallbackType.Wordpress
-
 const pid = wcSetting ? defaultValues.wcPaymentId : defaultValues.paymentId
 
 const PAYCOINLY_SERVER = window.__$paycoinly_settings?.server_url
-
-const BASE_CALLBACK_URL = `${window.location.origin}/wp-json/paycoinly/process-payment`
-
-const callbackType = (payment: Payment) => {
-  if (payment.type !== 'Regular') {
-    return CallbackType.Other
-  }
-
-  if (payment.callbackUrl === BASE_CALLBACK_URL + '/wc') {
-    return CallbackType.Woocommerce
-  }
-
-  if (payment.callbackUrl === BASE_CALLBACK_URL) {
-    return CallbackType.Wordpress
-  }
-
-  return CallbackType.Other
-}
 
 const fetchPayments = (apiKey: string) =>
   fetch(`${PAYCOINLY_SERVER}/v1/payments`, {
@@ -61,10 +38,13 @@ const fetchPayments = (apiKey: string) =>
     }
   })
     .then((res) => res.json())
-    .then((res: Payment[]) =>
+    .then((res: PaymentRaw[]) =>
       res.map((item) => ({
         ...item,
-        type: callbackType(item)
+        type:
+          item.type !== 'Anonymous' &&
+          item.callbackUrl ===
+            `${window.location.origin}/wp-json/paycoinly/process-payment`
       }))
     )
 
@@ -114,9 +94,7 @@ function App() {
           )
         } else if (!res.some((item) => item.id === pid)) {
           setErrorFromSavedValue('No payment is selected. Please select one.')
-        } else if (
-          res.some((item) => item.id === pid && item.type !== DESIRED_TYPE)
-        ) {
+        } else if (res.some((item) => item.id === pid && !item.type)) {
           setErrorFromSavedValue(
             <>
               <strong>
@@ -125,7 +103,7 @@ function App() {
               <br />
               Selected payment is not eligible for your
               {wcSetting ? 'store' : 'site'}. Please select a different one, or
-              set the {wcSetting ? 'Woocommerce' : 'Wordpress'} option in{' '}
+              set the Wordpress option in{' '}
               <PaycoinlyDashboardLink link="dashboard" />.
             </>
           )
@@ -280,13 +258,11 @@ function App() {
                     key={item.id}
                     value={item.id}
                     width="full"
-                    cursor={
-                      item.type === DESIRED_TYPE ? 'initial' : 'not-allowed'
-                    }
-                    opacity={item.type === DESIRED_TYPE ? 1 : 0.5}
+                    cursor={item.type ? 'initial' : 'not-allowed'}
+                    opacity={item.type ? 1 : 0.5}
                   >
                     <RadioCard.ItemHiddenInput
-                      disabled={item.type !== DESIRED_TYPE}
+                      disabled={!item.type}
                       name={
                         optionKey ? `${optionKey}[payment_id]` : 'wc_payment_id'
                       }
@@ -296,13 +272,6 @@ function App() {
                       <RadioCard.ItemContent>
                         <HStack w="full">
                           <RadioCard.ItemText>{item.name}</RadioCard.ItemText>
-                          {item.type === CallbackType.Wordpress ? (
-                            <Badge colorPalette="blue">Wordpress</Badge>
-                          ) : (
-                            item.type === CallbackType.Woocommerce && (
-                              <Badge colorPalette="orange">Woocommerce</Badge>
-                            )
-                          )}
                         </HStack>
                         <RadioCard.ItemDescription>
                           {item.id}
@@ -327,14 +296,12 @@ function App() {
                 </Alert.Content>
               </Alert.Root>
             )}
-            {payments.some((item) => item.type !== DESIRED_TYPE) && (
+            {payments.some((item) => !item.type) && (
               <Text>
                 Some payments are disabled because they are not eligible for
                 your {wcSetting ? 'store' : 'site'}.
                 <br />
-                Please set the
-                {wcSetting ? ' Woocommerce ' : ' Wordpress '}
-                option in the payment settings in{' '}
+                Please set the Wordpress option in the payment settings in{' '}
                 <PaycoinlyDashboardLink link="dashboard" /> to use them.
               </Text>
             )}

@@ -67,12 +67,6 @@ class Paycoinly
                 'permission_callback' => '__return_true',
             ]);
 
-            register_rest_route(PAYCOINLY_ID, '/process-payment/(?P<mode>[^/]+)', [
-                'methods' => 'POST',
-                'callback' => [$this, 'payment_handler'],
-                'permission_callback' => '__return_true',
-            ]);
-
             register_rest_route(PAYCOINLY_ID, '/order/(?P<id>[^/]+)', [
                 'methods' => 'GET',
                 'callback' => [$this, 'get_payment_token'],
@@ -104,6 +98,7 @@ class Paycoinly
             apply_filters(PAYCOINLY_FILTER_ORDER_PRICE, $order_id),
             'USD',
             'USD',
+            'wp',
             $settings['api_key']
         );
 
@@ -125,7 +120,7 @@ class Paycoinly
     }
 
     /**
-     * Url: https://yourstore.com/wp-json/paycoinly/process-payment/:mode
+     * Url: https://yourstore.com/wp-json/paycoinly/process-payment
      */
     function payment_handler(WP_REST_Request $request)
     {
@@ -139,7 +134,7 @@ class Paycoinly
         }
 
         $payload = $request->get_json_params();
-        $mode = $request->get_param('mode');
+        $mode = $payload['mode'];
 
         if ($mode == 'wc') {
             if (class_exists('WooCommerce')) {
@@ -162,11 +157,8 @@ class Paycoinly
 
                 $order->payment_complete($payload['txLink']);
 
-                // Empty cart
-                // WC()->cart->empty_cart();
-
                 $order->add_order_note(
-                    'Order processed'
+                    'Order processed by Paycoinly'
                 );
             }
         }

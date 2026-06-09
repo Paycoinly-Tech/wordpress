@@ -8,7 +8,7 @@ export default defineConfig({
     tsconfigPaths: true
   },
   define: {
-    "process.env.NODE_ENV": JSON.stringify("production"),
+    'process.env.NODE_ENV': JSON.stringify('production')
   },
   build: {
     lib: {
@@ -18,6 +18,6 @@ export default defineConfig({
       formats: ['iife']
     },
     outDir: '../assets',
-    target: 'esnext',
+    target: 'esnext'
   }
 })
