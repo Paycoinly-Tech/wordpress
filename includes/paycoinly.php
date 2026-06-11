@@ -146,8 +146,6 @@ class Paycoinly
                 if (!$order) {
                     do_action(
                         PAYCOINLY_ACTION_HANDLE_PAYMENT,
-                        $payload['order_id'],
-                        $payload['user_id'],
                         $payload,
                         $mode,
                     );
@@ -167,8 +165,6 @@ class Paycoinly
 
         do_action(
             PAYCOINLY_ACTION_HANDLE_PAYMENT,
-            $payload['order_id'],
-            $payload['user_id'],
             $payload,
             $mode,
         );
