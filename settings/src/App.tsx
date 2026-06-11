@@ -192,17 +192,22 @@ function App() {
           </>
         )}
 
-        <Text>
-          Please see the&nbsp;
-          <Link
-            href={window.__$paycoinly_settings.docs}
-            outline="none"
-            color="orange"
-          >
-            documentation
-          </Link>
-          &nbsp; for detailed guidance on configuring the plugin.
-        </Text>
+        <Alert.Root status="info">
+          <Alert.Indicator />
+          <Alert.Content>
+            <Alert.Description>
+              Please see the&nbsp;
+              <Link
+                href={window.__$paycoinly_settings.docs}
+                outline="none"
+                color="orange"
+              >
+                documentation
+              </Link>
+              &nbsp;for detailed guidance on configuring the plugin.
+            </Alert.Description>
+          </Alert.Content>
+        </Alert.Root>
 
         <Field.Root>
           <Field.Label>API Key</Field.Label>
