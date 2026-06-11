@@ -31,6 +31,18 @@ const pid = wcSetting ? defaultValues.wcPaymentId : defaultValues.paymentId
 
 const PAYCOINLY_SERVER = window.__$paycoinly_settings?.server_url
 
+const eligible = (item: PaymentRaw) => {
+  const callbackUrl =
+    item.callbackUrl ===
+    `${window.location.origin}/wp-json/paycoinly/process-payment`
+
+  if (wcSetting) {
+    return item.type !== 'Anonymous' && callbackUrl
+  }
+
+  return callbackUrl || item.type === 'Anonymous'
+}
+
 const fetchPayments = (apiKey: string) =>
   fetch(`${PAYCOINLY_SERVER}/v1/payments`, {
     headers: {
@@ -41,10 +53,7 @@ const fetchPayments = (apiKey: string) =>
     .then((res: PaymentRaw[]) =>
       res.map((item) => ({
         ...item,
-        type:
-          item.type !== 'Anonymous' &&
-          item.callbackUrl ===
-            `${window.location.origin}/wp-json/paycoinly/process-payment`
+        type: eligible(item)
       }))
     )
 
@@ -182,6 +191,18 @@ function App() {
             />
           </>
         )}
+
+        <Text>
+          Please see the&nbsp;
+          <Link
+            href={window.__$paycoinly_settings.docs}
+            outline="none"
+            color="orange"
+          >
+            documentation
+          </Link>
+          &nbsp; for detailed guidance on configuring the plugin.
+        </Text>
 
         <Field.Root>
           <Field.Label>API Key</Field.Label>

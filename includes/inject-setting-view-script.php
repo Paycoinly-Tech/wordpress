@@ -15,6 +15,7 @@ function inject_setting_view_script($settings, $option_key)
     );
 
     $settings['server_url'] = PAYCOINLY_DOMAIN;
+    $settings['docs'] = PAYCOINLY_DOCS_URL;
 
     if ($option_key) {
         $settings['option_key'] = $option_key;

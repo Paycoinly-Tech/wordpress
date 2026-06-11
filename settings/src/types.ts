@@ -6,6 +6,7 @@ declare global {
       payment_id: string
       wc_payment_id: string
 
+      docs: string
       option_key?: string
       wc?: boolean
       server_url: string
@@ -25,6 +26,6 @@ export interface PaymentRaw {
   id: string
   name: string
   tokens: string[]
-  type: string
+  type: 'Regular' | 'Anonymous' | 'Claim'
   callbackUrl: string
 }
