@@ -1,0 +1,18 @@
+# Paycoinly Plugin for Wordpress and Woocommerce
+
+## Docs
+
+https://www.paycoinly.xyz/docs/integrations/wordpress
+
+https://www.paycoinly.xyz/docs/integrations/woocommerce
+
+https://www.paycoinly.xyz/docs/appendix/wordpress-plugin-hooks
+
+## Getting Ready to Development
+
+```bash
+composer install
+cd settings
+bun install
+bun build
+```
