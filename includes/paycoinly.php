@@ -208,25 +208,28 @@ class Paycoinly
         $render = "<button onclick=\"$onclick\" class=\"{$atts['class']}\" style=\"{$atts['style']}\">";
         $render .= html_entity_decode($atts['html']);
         $render .= "</button>";
-        ?>
 
-            <script>
-                window.addEventListener('message', (event) => {
-                    if (event.origin !== '<?php echo PAYCOINLY_DOMAIN; ?>') {
-                        return;
+        $script = "
+            window.addEventListener('message', (event) => {
+                if (event.origin !== '" . PAYCOINLY_DOMAIN . "') {
+                    return;
+                }
+
+                if (event.data.type === 'PAYCOINLY_PAYMENT_COMPLETE') {
+                    if (event.data.payload.metadata.order_id === {$atts['order_id']}) {
+                        {$atts['on_complete']}
                     }
+                }
+            });
+        ";
 
-                    if (event.data.type === 'PAYCOINLY_PAYMENT_COMPLETE') {
-                        <?php
-                        echo $atts['on_complete'];
-                            ?>
+        $handler = PAYCOINLY_ID . '-payment-complete-handler-script';
 
-                    }
-                });
-            </script>
+        wp_register_script($handler, '', [], false, true);
+        wp_enqueue_script($handler);
+        wp_add_inline_script($handler, $script);
 
-            <?php
-                return $render;
+        return $render;
     }
 
     public function settings_page()
