@@ -16,3 +16,7 @@ cd settings
 bun install
 bun build
 ```
+
+## Writing readme.txt
+
+https://developer.wordpress.org/plugins/wordpress-org/how-your-readme-txt-works/
