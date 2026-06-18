@@ -1,5 +1,8 @@
 <?php
 /**
+ * Copyright (C) 2026 Paycoinly
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ * 
  * Plugin Name: Paycoinly
  * Description: Crypto Payment Gateway
  * Version: 1.0.0
