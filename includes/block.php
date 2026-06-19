@@ -3,6 +3,10 @@
 if (!defined('ABSPATH'))
     exit;
 
+if (!class_exists('WooCommerce')) {
+    return;
+}
+
 require_once plugin_dir_path(__FILE__) . 'constants.php';
 
 use Automattic\WooCommerce\Blocks\Payments\Integrations\AbstractPaymentMethodType;

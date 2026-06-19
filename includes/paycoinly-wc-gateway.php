@@ -3,6 +3,10 @@
 if (!defined('ABSPATH'))
     exit;
 
+if (!class_exists('WooCommerce')) {
+    return;
+}
+
 require_once plugin_dir_path(__FILE__) . 'constants.php';
 require_once plugin_dir_path(__FILE__) . 'inject-setting-view-script.php';
 require_once plugin_dir_path(__FILE__) . 'ui.php';
@@ -88,7 +92,7 @@ class Paycoinly_WC extends WC_Payment_Gateway
     {
         paycoinly_inject_setting_view_script($this->settings, null);
 
-        return esc_html(paycoinly_spinner());
+        return wp_kses_post(paycoinly_spinner());
     }
 
     public function get_field_key($key)

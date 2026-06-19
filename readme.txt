@@ -6,8 +6,6 @@ Stable tag: 1.0.0
 License: GPLv3
 Requires at least: 4.7
 Tested up to: 7.0
-WC requires at least: 3.3
-WC tested up to: 10.8
 
 Integrate Paycoinly crypto payments into WordPress or WooCommerce easily - no manual code updates needed
 

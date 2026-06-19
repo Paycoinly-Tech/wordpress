@@ -41,7 +41,7 @@ function paycoinly_payment_token(
 
     if (is_wp_error($response)) {
         $err = $response->get_error_message();
-        throw new Exception(esc_html("error getting payment token: {$err}"));
+        throw new Exception(esc_html("error calling payment token api: {$err}"));
     }
 
     $code = wp_remote_retrieve_response_code( $response );
@@ -49,7 +49,7 @@ function paycoinly_payment_token(
     $result = json_decode($response, true);
     
     if ($code !== 200) {
-        throw new Exception(esc_html("error getting payment token: {$response['error']}"));
+        throw new Exception(esc_html("error returned from payment token api: {$response['error']}"));
     }
 
 

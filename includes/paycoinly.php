@@ -53,7 +53,7 @@ class Paycoinly
             'plugin_action_links_' . plugin_basename(dirname(__DIR__)) . '/' . PAYCOINLY_ID . '.php',
             function ($links) use ($settings_slug) {
                 $settings_link = '<a href="' . admin_url('admin.php?page=' . $settings_slug) . '">Settings</a>';
-                $docs_link = '<a href="' . PAYCOINLY_DOCS_URL . '">Docs</a>';
+                $docs_link = '<a href="' . PAYCOINLY_DOCS_URL . '" target="_blank">Docs</a>';
 
                 array_unshift($links, $docs_link);
                 array_unshift($links, $settings_link);
@@ -246,7 +246,7 @@ class Paycoinly
                 settings_fields(PAYCOINLY_ID . '_setting_group');
                 ?>
 
-                <div class="form-table" style="display: flex;"><?php echo esc_html(paycoinly_spinner()) ?></div>
+                <div class="form-table" style="display: flex;"><?php echo wp_kses_post(paycoinly_spinner()) ?></div>
                 <?php submit_button(); ?>
             </form>
         </div>
