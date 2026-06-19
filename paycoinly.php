@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  * 
  * Plugin Name: Paycoinly
- * Description: Crypto Payment Gateway
+ * Description: Integrate crypto payments gateway powered by Paycoinly into WordPress or WooCommerce easily - no manual code updates needed.
  * Version: 1.0.0
  * Author: Paycoinly
  * Author URI: https://www.paycoinly.xyz
