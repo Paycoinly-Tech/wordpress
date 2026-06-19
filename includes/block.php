@@ -54,7 +54,7 @@ final class Paycoinly_Blocks_Support extends AbstractPaymentMethodType
                 'wp-element',
                 'wp-html-entities'
             ],
-            '1.0.0',
+            PAYCOINLY_VERSION,
             true
         );
 

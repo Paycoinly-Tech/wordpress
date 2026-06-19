@@ -94,7 +94,7 @@ class Paycoinly
         $settings = get_option(PAYCOINLY_OPTION_KEY, []);
         $order_id = $request->get_param('id');
 
-        $token = payment_token(
+        $token = paycoinly_payment_token(
             $settings['payment_id'],
             $order_id,
             apply_filters(PAYCOINLY_FILTER_ORDER_PRICE, $order_id),
@@ -189,10 +189,10 @@ class Paycoinly
         $url = get_rest_url(null, "paycoinly/order/{$atts['order_id']}");
 
         if ($atts["redirect"]) {
-            $parsed = parse_url($atts['redirect']);
+            $parsed = wp_parse_url($atts['redirect']);
 
             if (!isset($parsed['scheme']) || !isset($parsed['host'])) {
-                $host = $_SERVER['HTTP_HOST'];
+                $host = home_url();
                 $atts["redirect"] = "https://{$host}/" . ltrim($atts["redirect"], '/');
             }
 
@@ -225,7 +225,7 @@ class Paycoinly
 
         $handler = PAYCOINLY_ID . '-payment-complete-handler-script';
 
-        wp_register_script($handler, '', [], false, true);
+        wp_register_script($handler, '', [], PAYCOINLY_VERSION, true);
         wp_enqueue_script($handler);
         wp_add_inline_script($handler, $script);
 
@@ -236,17 +236,17 @@ class Paycoinly
     {
         $settings = get_option(PAYCOINLY_OPTION_KEY, []);
 
-        inject_setting_view_script($settings, PAYCOINLY_OPTION_KEY);
+        paycoinly_inject_setting_view_script($settings, PAYCOINLY_OPTION_KEY);
 
         ?>
         <div class="wrap">
-            <h1><?php echo PAYCOINLY_TITLE; ?> Settings</h1>
+            <h1><?php echo esc_html(PAYCOINLY_TITLE); ?> Settings</h1>
             <form method="post" action="options.php" class='paycoinly_settings_form'>
                 <?php
                 settings_fields(PAYCOINLY_ID . '_setting_group');
                 ?>
 
-                <div class="form-table" style="display: flex;"><?php echo spinner() ?></div>
+                <div class="form-table" style="display: flex;"><?php echo esc_html(paycoinly_spinner()) ?></div>
                 <?php submit_button(); ?>
             </form>
         </div>

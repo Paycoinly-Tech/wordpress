@@ -39,7 +39,7 @@ class Paycoinly_WC extends WC_Payment_Gateway
 
         $thank_you = $order->get_checkout_order_received_url();
 
-        $token = payment_token(
+        $token = paycoinly_payment_token(
             $this->settings['wc_payment_id'],
             $order_id,
             $order->get_total(),
@@ -86,9 +86,9 @@ class Paycoinly_WC extends WC_Payment_Gateway
 
     public function generate_settings_html($form_fields = array(), $echo = true)
     {
-        inject_setting_view_script($this->settings, null);
+        paycoinly_inject_setting_view_script($this->settings, null);
 
-        return spinner();
+        return esc_html(paycoinly_spinner());
     }
 
     public function get_field_key($key)
@@ -103,6 +103,6 @@ class Paycoinly_WC extends WC_Payment_Gateway
 
     public function payment_fields()
     {
-        echo PAYCOINLY_DESCRIPTION;
+        echo esc_html(PAYCOINLY_DESCRIPTION);
     }
 }

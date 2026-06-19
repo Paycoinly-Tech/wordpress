@@ -1,8 +1,11 @@
 <?php
 
+if (!defined('ABSPATH'))
+    exit;
+
 require_once plugin_dir_path(__FILE__) . 'constants.php';
 
-function payment_token(
+function paycoinly_payment_token(
     $payment_id,
     $order_id,
     $price,
@@ -11,7 +14,7 @@ function payment_token(
     $mode,
     $api_key)
 {
-    $data = [
+    $body = [
         'price' => floatval($price),
         'currency'=> $currency,
         'localCurrency' => $local_currency,
@@ -27,29 +30,28 @@ function payment_token(
         "x-api-key: {$api_key}"
     ];
 
-    $endpoint = PAYCOINLY_DOMAIN . "/v1/pay/{$payment_id}";
-    $ch = curl_init($endpoint);
+    $url = PAYCOINLY_DOMAIN . "/v1/pay/{$payment_id}";
 
-    curl_setopt($ch, CURLOPT_POST, true);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+    $response = wp_remote_post($url, array(
+        'method'  => 'POST',
+        'headers' => $headers,
+        'body' => wp_json_encode($body),
+        )
+    );
 
-    $response = curl_exec($ch);
-
-    if (curl_errno($ch)) {
-        throw new Exception('Curl error: ' . curl_error($ch));
+    if (is_wp_error($response)) {
+        $err = $response->get_error_message();
+        throw new Exception(esc_html("error getting payment token: {$err}"));
     }
 
-    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-
-    unset($ch);
-
-    if ($httpCode !== 200) {
-        throw new Exception("HTTP error! Status: {$httpCode}");
-    }
-
+    $code = wp_remote_retrieve_response_code( $response );
+    $response = wp_remote_retrieve_body($response);
     $result = json_decode($response, true);
+    
+    if ($code !== 200) {
+        throw new Exception(esc_html("error getting payment token: {$response['error']}"));
+    }
+
 
     return $result['token'];
 }
