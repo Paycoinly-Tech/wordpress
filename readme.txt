@@ -71,7 +71,7 @@ No, you don't have to. Configure API key once and it's shared in both settings.
 
 Though they look the same, they are actually different except *API Key* field.
 The plugin settings apply to [*paycoinly* shortcode](https://www.paycoinly.xyz/docs/appendix/wordpress-plugin-hooks#shortcodes).
-Woocommerce payment gateway settings applies to *Place order* button when Paycoinly is selected in checkout page .
+Woocommerce payment gateway settings apply to *Place order* button when Paycoinly is selected in checkout page .
 
 == Screenshots ==
 1. General settings
