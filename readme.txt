@@ -4,6 +4,7 @@ Donate link: https://www.paycoinly.xyz
 Tags: crypto, cryptocurrency, payment, payment gateway
 Stable tag: 1.0.0
 License: GPLv3
+Requires PHP: 7.0
 Requires at least: 4.7
 Tested up to: 7.0
 
@@ -55,6 +56,10 @@ For Woocomerce sites
 
 *Release Date - June 22 2026*
 * Initial launch
+
+ == Upgrade Notice ==
+ = 1.0.0 =
+ First release
 
 == Frequently Asked Questions ==
 
