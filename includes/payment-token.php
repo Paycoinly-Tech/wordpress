@@ -26,14 +26,13 @@ function paycoinly_payment_token(
     ];
 
     $headers = [
-        'Content-Type: application/json',
-        "x-api-key: {$api_key}"
+        'Content-Type' => 'application/json',
+        'x-api-key' => $api_key
     ];
 
     $url = PAYCOINLY_DOMAIN . "/v1/pay/{$payment_id}";
 
     $response = wp_remote_post($url, array(
-        'method'  => 'POST',
         'headers' => $headers,
         'body' => wp_json_encode($body),
         )
@@ -49,7 +48,7 @@ function paycoinly_payment_token(
     $result = json_decode($response, true);
     
     if ($code !== 200) {
-        throw new Exception(esc_html("error returned from payment token api: {$response['error']}"));
+        throw new Exception(esc_html("error returned from payment token api: {$result['error']}"));
     }
 
 

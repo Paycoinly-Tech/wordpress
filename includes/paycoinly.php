@@ -91,34 +91,41 @@ class Paycoinly
      */
     function get_payment_token(WP_REST_Request $request)
     {
-        $settings = get_option(PAYCOINLY_OPTION_KEY, []);
-        $order_id = $request->get_param('id');
-
-        $token = paycoinly_payment_token(
-            $settings['payment_id'],
-            $order_id,
-            apply_filters(PAYCOINLY_FILTER_ORDER_PRICE, $order_id),
-            'USD',
-            'USD',
-            'wp',
-            $settings['api_key']
-        );
-
         $response = new WP_REST_Response();
 
-        $response->set_status(302);
+        try {
+            $settings = get_option(PAYCOINLY_OPTION_KEY, []);
+            $order_id = $request->get_param('id');
+            $price = apply_filters(PAYCOINLY_FILTER_ORDER_PRICE, $order_id);
+    
+            if (is_null($price)) {
+                throw new Exception("Null price for order id '{$order_id}'. Please check " . PAYCOINLY_FILTER_ORDER_PRICE . " filter usage. https://www.paycoinly.xyz/docs/appendix/wordpress-plugin-hooks#paycoinly_order_price");
+            }
+    
+            $token = paycoinly_payment_token(
+                $settings['payment_id'],
+                $order_id,
+                $price,
+                'USD',
+                'USD',
+                'wp',
+                $settings['api_key']
+            );
 
-        $location = "/pay?token={$token}";
+            $location = "/pay?token={$token}";
+            $redirect = $request->get_param("redirect");
+    
+            if ($redirect) {
+                $location = add_query_arg(["redirect" => $redirect], $location);
+            }
 
-        $redirect = $request->get_param("redirect");
-
-        if ($redirect) {
-            $location = add_query_arg(["redirect" => $redirect], $location);
+            $response->header('Location', PAYCOINLY_DOMAIN . $location);
+            $response->set_status(302);
+        } catch (Exception $e) {
+            $response->set_data($e->getMessage());
+        } finally {
+            return $response;
         }
-
-        $response->header('Location', PAYCOINLY_DOMAIN . $location);
-
-        return $response;
     }
 
     /**
@@ -187,22 +194,19 @@ class Paycoinly
         );
 
         $url = get_rest_url(null, "paycoinly/order/{$atts['order_id']}");
+        $onclick = '';
 
         if ($atts["redirect"]) {
             $parsed = wp_parse_url($atts['redirect']);
 
             if (!isset($parsed['scheme']) || !isset($parsed['host'])) {
-                $host = home_url();
-                $atts["redirect"] = "https://{$host}/" . ltrim($atts["redirect"], '/');
+                $atts["redirect"] = home_url() . $atts["redirect"];
             }
 
-            $url = get_rest_url(null, "paycoinly/order/{$atts['order_id']}?redirect={$atts['redirect']}");
-        }
-
-        $onclick = "window.open('$url', 'Pay with PayCoinly', 'width=800,height=550,left=200,top=100')";
-
-        if ($atts["redirect"]) {
+            $url .= "?redirect={$atts['redirect']}";
             $onclick = "location.href='$url'";
+        } else {
+            $onclick = "window.open('$url', 'Pay with PayCoinly', 'width=800,height=550,left=200,top=100')";
         }
 
         $render = "<button onclick=\"$onclick\" class=\"{$atts['class']}\" style=\"{$atts['style']}\">";
