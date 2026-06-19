@@ -28,7 +28,14 @@ class Paycoinly
                 PAYCOINLY_OPTION_KEY,
                 [
                     'type' => 'array',
-                    // 'sanitize_callback' => 'my_plugin_sanitize_settings',
+                    'sanitize_callback' => function ($input) {
+                        return [
+                            'enabled' => $input['enabled'] === 'yes' ? 'yes' : 'no',
+                            'api_key' => sanitize_text_field($input['api_key'] ?? ''),
+                            'payment_id' => sanitize_text_field($input['payment_id'] ?? ''),
+                            'wc_payment_id' => sanitize_text_field($input['wc_payment_id'] ?? '')
+                        ];
+                    },
                     'default' => [],
                 ]
             );
