@@ -49,18 +49,26 @@ class Paycoinly
             }
         );
 
+        $plugin_basename = plugin_basename(dirname(__DIR__)) . '/' . PAYCOINLY_ID . '.php';
+
         add_filter(
-            'plugin_action_links_' . plugin_basename(dirname(__DIR__)) . '/' . PAYCOINLY_ID . '.php',
+            "plugin_action_links_{$plugin_basename}",
             function ($links) use ($settings_slug) {
                 $settings_link = '<a href="' . admin_url('admin.php?page=' . $settings_slug) . '">Settings</a>';
-                $docs_link = '<a href="' . PAYCOINLY_DOCS_URL . '" target="_blank">Docs</a>';
 
-                array_unshift($links, $docs_link);
                 array_unshift($links, $settings_link);
 
                 return $links;
             }
         );
+
+        add_filter('plugin_row_meta', function($links, $file) use ($plugin_basename) {
+             if ($file === $plugin_basename) {
+                $links[] = '<a href="' . PAYCOINLY_DOCS_URL . '" target="_blank">Docs</a>';
+            }
+
+            return $links;
+        }, 10, 2);
 
         add_action('rest_api_init', function () {
             register_rest_route(PAYCOINLY_ID, '/process-payment', [
