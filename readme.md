@@ -1,4 +1,4 @@
-# Paycoinly Plugin for Wordpress and Woocommerce
+# Paycoinly Plugin for WordPress and WooCommerce
 
 ## Docs
 

@@ -1,5 +1,5 @@
 === Paycoinly ===
-Contributors: donnferg
+Contributors: paycoinly
 Donate link: https://www.paycoinly.xyz
 Tags: crypto, cryptocurrency, payment, payment gateway
 Stable tag: 1.0.0
@@ -8,7 +8,7 @@ Requires PHP: 7.0
 Requires at least: 4.7
 Tested up to: 7.0
 
-Integrate Paycoinly crypto payments into WordPress or WooCommerce easily - no manual code updates needed
+Integrate crypto payments into WordPress or WooCommerce easily - no manual code updates needed
 
 == Description ==
 
@@ -16,12 +16,12 @@ Integrate Paycoinly crypto payments into WordPress or WooCommerce easily - no ma
 
 The official plugin maintained by [Paycoinly](https://www.paycoinly.xyz)
 
-The plugin is designed to integrate crypto payment service powered by Paycoinly easily into your Wordpress or Woocommerce site without hassle of updating your code manually.
+The plugin is designed to integrate crypto payment service powered by Paycoinly easily into your WordPress or WooCommerce site without hassle of updating your code manually.
 
-It provides [*paycoinly* shortcode](https://www.paycoinly.xyz/docs/appendix/wordpress-plugin-hooks#shortcodes) to place a button triggerring crypto payment service of Paycoinly, which can be used for subscription, credit system and the other pricing requirements of your site.
+It provides [*paycoinly* shortcode](https://www.paycoinly.xyz/docs/appendix/wordpress-plugin-hooks#shortcodes) to place a button triggering crypto payment service of Paycoinly, which can be used for subscription, credit system and the other pricing requirements of your site.
 https://www.paycoinly.xyz/docs/integrations/wordpress
 
-For Woocommerce sites, it adds Paycoinly crypto payment gateway in checkout page.
+For WooCommerce sites, it adds Paycoinly crypto payment gateway in checkout page.
 https://www.paycoinly.xyz/docs/integrations/woocommerce
 
 It provides some actions and filters which customize its functionalities to meet your business demand and pricing requirements.
@@ -36,7 +36,7 @@ https://www.paycoinly.xyz/docs/appendix/wordpress-plugin-hooks
 
 ## Use Cases
 
-Subscription, Credit system, Woocommerce checkout
+Subscription, Credit system, WooCommerce checkout
 
 == Installation ==
 
@@ -44,10 +44,10 @@ Subscription, Credit system, Woocommerce checkout
 * Enter API Key
 * Select a payment under *Payments* section
 
-For Woocomerce sites
+For WooCommerce sites
 
-* Navigate to Woocommerce payment gateway settings
-* Check *Activate Paycoinly Gateway in Woocommerce*
+* Navigate to WooCommerce payment gateway settings
+* Check *Activate Paycoinly Gateway in WooCommerce*
 * Select a payment under *Payments* section
 
 == Changelog ==
@@ -63,16 +63,16 @@ For Woocomerce sites
 
 == Frequently Asked Questions ==
 
-= Do I have to provide API Key separately in plugin settings and Woocommerce payment gateway settings?
+= Do I have to provide API Key separately in plugin settings and WooCommerce payment gateway settings?
 
 No, you don't have to. Configure API key once and it's shared in both settings.
 
-= Why do I see the same looking settings in both plugin settings and Woocommerce payment gateway settings?
+= Why do I see the same looking settings in both plugin settings and WooCommerce payment gateway settings?
 
 Though they look the same, they are actually different except *API Key* field.
 The plugin settings apply to [*paycoinly* shortcode](https://www.paycoinly.xyz/docs/appendix/wordpress-plugin-hooks#shortcodes).
-Woocommerce payment gateway settings apply to *Place order* button when Paycoinly is selected in checkout page .
+WooCommerce payment gateway settings apply to *Place order* button when Paycoinly is selected in checkout page .
 
 == Screenshots ==
 1. General settings
-2. Woocommerce payment gateway settings
+2. WooCommerce payment gateway settings

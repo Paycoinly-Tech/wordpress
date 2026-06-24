@@ -173,7 +173,7 @@ class Paycoinly
                     );
 
                     return new WP_REST_Response([
-                        'error' => 'Woocommerce order not found'
+                        'error' => 'WooCommerce order not found'
                     ], 404);
                 }
 

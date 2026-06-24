@@ -112,7 +112,7 @@ function App() {
               <br />
               Selected payment is not eligible for your
               {wcSetting ? 'store' : 'site'}. Please select a different one, or
-              set the Wordpress option in{' '}
+              set the WordPress option in{' '}
               <PaycoinlyDashboardLink link="dashboard" />.
             </>
           )
@@ -163,7 +163,7 @@ function App() {
               <Checkbox.HiddenInput name="enabled" />
               <Checkbox.Control />
               <Checkbox.Label>
-                Activate Paycoinly Gateway in Woocommerce
+                Activate Paycoinly Gateway in WooCommerce
               </Checkbox.Label>
             </Checkbox.Root>
           </Field.Root>
@@ -327,7 +327,7 @@ function App() {
                 Some payments are disabled because they are not eligible for
                 your {wcSetting ? 'store' : 'site'}.
                 <br />
-                Please set the Wordpress option in the payment settings in{' '}
+                Please set the WordPress option in the payment settings in{' '}
                 <PaycoinlyDashboardLink link="dashboard" /> to use them.
               </Text>
             )}
@@ -336,7 +336,7 @@ function App() {
 
         {wcSetting ? (
           <Text>
-            If you want to configure payment for pages other than Woocommerce
+            If you want to configure payment for pages other than WooCommerce
             checkout page, please go to{' '}
             <Link
               href={`${location.origin}/wp-admin/admin.php?page=paycoinly-settings`}

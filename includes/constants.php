@@ -6,7 +6,7 @@ if (!defined('ABSPATH'))
 define('PAYCOINLY_ID', 'paycoinly');
 define('PAYCOINLY_TITLE', 'Paycoinly');
 define('PAYCOINLY_OPTION_KEY', PAYCOINLY_ID . '_settings');
-define('PAYCOINLY_DESCRIPTION', 'Crypto Payment Platform for Woocommerce');
+define('PAYCOINLY_DESCRIPTION', 'Crypto Payment Platform for WooCommerce');
 define('PAYCOINLY_DOMAIN', 'https://app.paycoinly.xyz');
 define('PAYCOINLY_DOCS_URL', 'https://www.paycoinly.xyz/docs/integrations/wordpress');
 define('PAYCOINLY_VERSION', '1.0.0');
