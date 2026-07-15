@@ -12,11 +12,11 @@ function paycoinly_payment_token(
     $currency,
     $local_currency,
     $mode,
-    $api_key)
-{
+    $api_key
+) {
     $body = [
         'price' => floatval($price),
-        'currency'=> $currency,
+        'currency' => $currency,
         'localCurrency' => $local_currency,
         'metadata' => [
             'order_id' => $order_id,
@@ -32,23 +32,25 @@ function paycoinly_payment_token(
 
     $url = PAYCOINLY_DOMAIN . "/v1/pay/{$payment_id}";
 
-    $response = wp_remote_post($url, array(
-        'headers' => $headers,
-        'body' => wp_json_encode($body),
+    $response = wp_remote_post(
+        $url,
+        array(
+            'headers' => $headers,
+            'body' => wp_json_encode($body),
         )
     );
 
     if (is_wp_error($response)) {
         $err = $response->get_error_message();
-        throw new Exception(esc_html("error calling payment token api: {$err}"));
+        throw new Exception(sprintf("error calling payment token api: %s", esc_html($err)));
     }
 
-    $code = wp_remote_retrieve_response_code( $response );
+    $code = wp_remote_retrieve_response_code($response);
     $response = wp_remote_retrieve_body($response);
     $result = json_decode($response, true);
-    
+
     if ($code !== 200) {
-        throw new Exception(esc_html("error returned from payment token api: {$result['error']}"));
+        throw new Exception(sprintf("error returned from payment token api: %s", esc_html($result['error'])));
     }
 
 

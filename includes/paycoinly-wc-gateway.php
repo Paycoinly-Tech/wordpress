@@ -7,6 +7,10 @@ if (!class_exists('WooCommerce')) {
     return;
 }
 
+if (!class_exists('WC_Payment_Gateway')) {
+    return;
+}
+
 require_once plugin_dir_path(__FILE__) . 'constants.php';
 require_once plugin_dir_path(__FILE__) . 'inject-setting-view-script.php';
 require_once plugin_dir_path(__FILE__) . 'ui.php';

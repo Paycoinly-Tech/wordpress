@@ -69,8 +69,8 @@ class Paycoinly
             }
         );
 
-        add_filter('plugin_row_meta', function($links, $file) use ($plugin_basename) {
-             if ($file === $plugin_basename) {
+        add_filter('plugin_row_meta', function ($links, $file) use ($plugin_basename) {
+            if ($file === $plugin_basename) {
                 $links[] = '<a href="' . PAYCOINLY_DOCS_URL . '" target="_blank">Docs</a>';
             }
 
@@ -112,11 +112,17 @@ class Paycoinly
             $settings = get_option(PAYCOINLY_OPTION_KEY, []);
             $order_id = $request->get_param('id');
             $price = apply_filters(PAYCOINLY_FILTER_ORDER_PRICE, $order_id);
-    
+
             if (is_null($price)) {
-                throw new Exception("Null price for order id '{$order_id}'. Please check " . PAYCOINLY_FILTER_ORDER_PRICE . " filter usage. https://www.paycoinly.xyz/docs/appendix/wordpress-plugin-hooks#paycoinly_order_price");
+                $err = sprintf(
+                    "Null price for order id '%s'. Please check %s filter usage. %s",
+                    $order_id,
+                    PAYCOINLY_FILTER_ORDER_PRICE,
+                    "https://www.paycoinly.xyz/docs/appendix/wordpress-plugin-hooks#paycoinly_order_price"
+                );
+                throw new Exception($err);
             }
-    
+
             $token = paycoinly_payment_token(
                 $settings['payment_id'],
                 $order_id,
@@ -129,7 +135,7 @@ class Paycoinly
 
             $location = "/pay?token={$token}";
             $redirect = $request->get_param("redirect");
-    
+
             if ($redirect) {
                 $location = add_query_arg(["redirect" => $redirect], $location);
             }
@@ -224,23 +230,22 @@ class Paycoinly
             $onclick = "window.open('$url', 'Pay with PayCoinly', 'width=800,height=550,left=200,top=100')";
         }
 
-        $render = "<button onclick=\"$onclick\" class=\"{$atts['class']}\" style=\"{$atts['style']}\">";
-        $render .= html_entity_decode($atts['html']);
-        $render .= "</button>";
-
-        $script = "
-            window.addEventListener('message', (event) => {
-                if (event.origin !== '" . PAYCOINLY_DOMAIN . "') {
+        $script = sprintf(
+            "window.addEventListener('message', (event) => {
+                if (event.origin !== '%s') {
                     return;
                 }
 
                 if (event.data.type === 'PAYCOINLY_PAYMENT_COMPLETE') {
-                    if (event.data.payload.metadata.order_id === {$atts['order_id']}) {
-                        {$atts['on_complete']}
+                    if (event.data.payload.metadata.order_id === %s) {
+                        %s
                     }
                 }
-            });
-        ";
+            });",
+            PAYCOINLY_DOMAIN,
+            wp_json_encode($atts['order_id']),
+            $atts['on_complete'], // not escaped as it's a JS snippet, not JS variable. Safe to use intact as it's provided by admin
+        );
 
         $handler = PAYCOINLY_ID . '-payment-complete-handler-script';
 
@@ -248,7 +253,13 @@ class Paycoinly
         wp_enqueue_script($handler);
         wp_add_inline_script($handler, $script);
 
-        return $render;
+        return sprintf(
+            "<button onclick=\"%s\" class=\"%s\" style=\"%s\">%s</button>",
+            esc_attr($onclick),
+            esc_attr($atts['class']),
+            esc_attr($atts['style']),
+            html_entity_decode($atts['html']), // not escaped as it's a HTML snippet rendered directly. Safe to use intact as it's provided by admin
+        );
     }
 
     public function settings_page()

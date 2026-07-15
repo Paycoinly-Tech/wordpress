@@ -50,6 +50,18 @@ For WooCommerce sites
 * Check *Activate Paycoinly Gateway in WooCommerce*
 * Select a payment under *Payments* section
 
+== External Services ==
+
+This plugin connects to the [Paycoinly](https://www.paycoinly.xyz) APIs to enable payment processing in collaboration with Paycoinly, which is detailed in the followings:
+
+* Sends payment details (https://www.paycoinly.xyz/docs/api-reference/payment-token) such as the price, currency, order id and user id to Paycoinly. Paycoinly returns a payment token, which is then used to display payment interface to users.
+* Retrieves a list of payments you configured in Paycoinly dashboard and allows an eligible one to be configured and used within the plugin.
+
+The plugin communicates with the Paycoiny API in the following scenarios:
+
+* When a customer clicks the *Place Order* button on the WooCommerce checkout page.
+* When a customer clicks the payment button rendered through *paycoinly* shortcode.
+
 == Changelog ==
 
 = 1.0.0 =
@@ -76,3 +88,7 @@ WooCommerce payment gateway settings apply to *Place order* button when Paycoinl
 == Screenshots ==
 1. General settings
 2. WooCommerce payment gateway settings
+3. Paycoinly Dashboard (payment information)
+4. Paycoinly Dashboard (payment settings)
+5. Paycoinly Dashboard (analytics)
+6. Payment UI on user side
