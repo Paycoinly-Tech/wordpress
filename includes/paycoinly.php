@@ -258,7 +258,7 @@ class Paycoinly
             esc_attr($onclick),
             esc_attr($atts['class']),
             esc_attr($atts['style']),
-            html_entity_decode($atts['html']), // not escaped as it's a HTML snippet rendered directly. Safe to use intact as it's provided by admin
+            wp_kses_post($atts['html']), // not escaped as it's a HTML snippet rendered directly. Safe to use intact as it's provided by admin
         );
     }
 

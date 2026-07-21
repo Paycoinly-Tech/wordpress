@@ -62,6 +62,10 @@ The plugin communicates with the Paycoiny API in the following scenarios:
 * When a customer clicks the *Place Order* button on the WooCommerce checkout page.
 * When a customer clicks the payment button rendered through *paycoinly* shortcode.
 
+[Terms of Service](https://www.paycoinly.xyz/terms-of-service)
+
+[Privacy Policy](https://www.paycoinly.xyz/privacy-policy)
+
 == Changelog ==
 
 = 1.0.0 =
