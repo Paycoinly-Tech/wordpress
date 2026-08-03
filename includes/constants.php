@@ -14,3 +14,4 @@ define('PAYCOINLY_VERSION', '1.0.0');
 define('PAYCOINLY_ACTION_BEFORE_HANDLE_WC_PAYMENT', PAYCOINLY_ID . '_before_handle_wc_payment');
 define('PAYCOINLY_ACTION_HANDLE_PAYMENT', PAYCOINLY_ID . '_handle_payment');
 define('PAYCOINLY_FILTER_ORDER_PRICE', PAYCOINLY_ID . '_order_price');
+define('PAYCOINLY_FILTER_ON_COMPLETE', PAYCOINLY_ID . '_on_complete');

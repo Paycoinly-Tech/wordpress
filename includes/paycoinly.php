@@ -205,7 +205,6 @@ class Paycoinly
         $atts = shortcode_atts(
             array(
                 'order_id' => '',
-                'on_complete' => 'console.log(event.data.payload);',
                 'redirect' => '',
                 'class' => '',
                 'style' => '',
@@ -244,7 +243,7 @@ class Paycoinly
             });",
             PAYCOINLY_DOMAIN,
             wp_json_encode($atts['order_id']),
-            $atts['on_complete'], // not escaped as it's a JS snippet, not JS variable. Safe to use intact as it's provided by admin
+            apply_filters(PAYCOINLY_FILTER_ON_COMPLETE, "console.log(event.data.payload);")
         );
 
         $handler = PAYCOINLY_ID . '-payment-complete-handler-script';
