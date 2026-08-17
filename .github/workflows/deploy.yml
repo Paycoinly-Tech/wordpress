@@ -37,6 +37,8 @@ jobs:
 
       - name: Build plugin zip
         run: |
+          mkdir -p "$BUILD_DIR"
+
           rsync -av \
             js \
             includes \
@@ -44,12 +46,15 @@ jobs:
             paycoinly.php \
             readme.txt \
             $BUILD_DIR
-          zip -r ${PLUGIN_SLUG}.zip $BUILD_DIR
+
+          cd "$BUILD_DIR"
+
+          zip -r "../${PLUGIN_SLUG}.zip" .
 
       - name: Upload Release Asset
         uses: softprops/action-gh-release@v3
         with:
-          files: ${PLUGIN_SLUG}.zip
+          files: ${{ env.PLUGIN_SLUG }}.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -58,7 +63,7 @@ jobs:
         env:
           SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
           SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
-          SLUG: $PLUGIN_SLUG
-          BUILD_DIR: $BUILD_DIR
+          SLUG: ${{ env.PLUGIN_SLUG }}
+          BUILD_DIR: ${{ env.BUILD_DIR }}
 
       
