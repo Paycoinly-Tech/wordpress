@@ -1,4 +1,4 @@
-name: Release WordPress Plugin
+name: Test WordPress Plugin
 
 permissions:
   contents: read
