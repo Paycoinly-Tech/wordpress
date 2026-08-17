@@ -2,7 +2,7 @@
 Contributors: paycoinly
 Donate link: https://www.paycoinly.xyz
 Tags: crypto, cryptocurrency, payment, payment gateway
-Stable tag: 1.0.0
+Stable tag: 1.0.2
 License: GPLv3
 Requires PHP: 7.0
 Requires at least: 4.7
@@ -71,12 +71,29 @@ The plugin communicates with the Paycoiny API in the following scenarios:
 
 == Changelog ==
 
+= 1.0.2 =
+
+*August 17 2026*
+* Update link format in readme.txt
+
+= 1.0.1 =
+
+*August 17 2026*
+* Add Plugin icons
+
 = 1.0.0 =
 
 *August 17 2026*
 * Initial launch
 
- == Upgrade Notice ==
+== Upgrade Notice ==
+
+= 1.0.2 =
+* Update link format in readme.txt
+
+= 1.0.1 =
+* Add Plugin icons
+
  = 1.0.0 =
  First release
 
