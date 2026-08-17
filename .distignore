@@ -1,0 +1,5 @@
+settings/node_modules
+settings/.*
+.github
+.gitignore
+vendor

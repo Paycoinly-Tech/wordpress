@@ -17,7 +17,7 @@ export default defineConfig({
       fileName: () => 'settings.js',
       formats: ['iife']
     },
-    outDir: '../assets',
+    outDir: '../js',
     target: 'esnext'
   }
 })

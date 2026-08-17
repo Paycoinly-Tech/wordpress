@@ -1,0 +1,38 @@
+name: Release WordPress Plugin
+
+permissions:
+  contents: read
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      PLUGIN_SLUG: paycoinly
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate plugin files
+        run: |
+          test -f paycoinly.php
+          test -f readme.txt
+
+      - name: PHP Syntax Check
+        run: |
+          find . -name "*.php" -print0 | xargs -0 -n1 php -l
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Install Bun packages
+        run: bun install
+        working-directory: settings
+
+      - name: Building frontend
+        run: bun run build
+        working-directory: settings

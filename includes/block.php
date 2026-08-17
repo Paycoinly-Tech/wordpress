@@ -3,6 +3,10 @@
 if (!defined('ABSPATH'))
     exit;
 
+if (!class_exists('WooCommerce')) {
+    return;
+}
+
 require_once plugin_dir_path(__FILE__) . 'constants.php';
 
 use Automattic\WooCommerce\Blocks\Payments\Integrations\AbstractPaymentMethodType;
@@ -47,14 +51,14 @@ final class Paycoinly_Blocks_Support extends AbstractPaymentMethodType
     {
         wp_register_script(
             'paycoinly-blocks',
-            plugin_dir_url(dirname(__FILE__)) . 'assets/wc-blocks.js',
+            plugin_dir_url(dirname(__FILE__)) . 'js/wc-blocks.js',
             [
                 'wc-blocks-registry',
                 'wc-settings',
                 'wp-element',
                 'wp-html-entities'
             ],
-            '1.0.0',
+            PAYCOINLY_VERSION,
             true
         );
 

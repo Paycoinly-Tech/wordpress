@@ -1,4 +1,4 @@
-# Paycoinly Plugin for Wordpress and Woocommerce
+# Paycoinly Plugin for WordPress and WooCommerce
 
 ## Docs
 
@@ -16,3 +16,7 @@ cd settings
 bun install
 bun build
 ```
+
+## Writing readme.txt
+
+https://developer.wordpress.org/plugins/wordpress-org/how-your-readme-txt-works/
