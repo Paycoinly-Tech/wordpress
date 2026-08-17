@@ -10,6 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       PLUGIN_SLUG: paycoinly
+      BUILD_DIR: build
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -36,21 +37,16 @@ jobs:
 
       - name: Build plugin zip
         run: |
-          mkdir build
-
           rsync -av \
-            --exclude=".git*" \
-            --exclude=".github" \
-            --exclude="settings/node_modules" \
-            --exclude="tests" \
-            --exclude=".DS_Store" \
-            ./ build/$PLUGIN_SLUG
-
-          cd build
-          zip -r ../${PLUGIN_SLUG}.zip $PLUGIN_SLUG
-
+            js \
+            includes \
+            LICENSE \
+            paycoinly.php \
+            readme.txt \
+            $BUILD_DIR
+          zip -r ${PLUGIN_SLUG}.zip $BUILD_DIR
       - name: Upload Release Asset
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           files: ${PLUGIN_SLUG}.zip
         env:
@@ -62,5 +58,6 @@ jobs:
           SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
           SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
           SLUG: $PLUGIN_SLUG
+          BUILD_DIR: $BUILD_DIR
 
       

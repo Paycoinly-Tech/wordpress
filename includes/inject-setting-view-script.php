@@ -11,7 +11,7 @@ function paycoinly_inject_setting_view_script($settings, $option_key)
 
     wp_enqueue_script(
         $script_handle,
-        plugin_dir_url(__FILE__) . '../assets/settings.js',
+        plugin_dir_url(__FILE__) . '../js/settings.js',
         [],
         PAYCOINLY_VERSION,
         true

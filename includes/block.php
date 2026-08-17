@@ -51,7 +51,7 @@ final class Paycoinly_Blocks_Support extends AbstractPaymentMethodType
     {
         wp_register_script(
             'paycoinly-blocks',
-            plugin_dir_url(dirname(__FILE__)) . 'assets/wc-blocks.js',
+            plugin_dir_url(dirname(__FILE__)) . 'js/wc-blocks.js',
             [
                 'wc-blocks-registry',
                 'wc-settings',
