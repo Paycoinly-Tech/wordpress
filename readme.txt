@@ -92,7 +92,9 @@ WooCommerce payment gateway settings apply to *Place order* button when Paycoinl
 == Screenshots ==
 1. General settings
 2. WooCommerce payment gateway settings
-3. Paycoinly Dashboard (payment information)
+3. Paycoinly Dashboard (main)
 4. Paycoinly Dashboard (payment settings)
-5. Paycoinly Dashboard (analytics)
-6. Payment UI on user side
+5. Paycoinly Dashboard (coin selection)
+6. Paycoinly Dashboard (analytics)
+7. Payment UI on user side (QR)
+8. Payment UI on user side
