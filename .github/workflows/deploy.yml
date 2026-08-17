@@ -45,6 +45,7 @@ jobs:
             readme.txt \
             $BUILD_DIR
           zip -r ${PLUGIN_SLUG}.zip $BUILD_DIR
+
       - name: Upload Release Asset
         uses: softprops/action-gh-release@v3
         with:
