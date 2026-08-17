@@ -19,13 +19,16 @@ The official plugin maintained by [Paycoinly](https://www.paycoinly.xyz)
 The plugin is designed to integrate crypto payment service powered by Paycoinly easily into your WordPress or WooCommerce site without hassle of updating your code manually.
 
 It provides [*paycoinly* shortcode](https://www.paycoinly.xyz/docs/appendix/wordpress-plugin-hooks#shortcodes) to place a button triggering crypto payment service of Paycoinly, which can be used for subscription, credit system and the other pricing requirements of your site.
-https://www.paycoinly.xyz/docs/integrations/wordpress
+
+[https://www.paycoinly.xyz/docs/integrations/wordpress](https://www.paycoinly.xyz/docs/integrations/wordpress)
 
 For WooCommerce sites, it adds Paycoinly crypto payment gateway in checkout page.
-https://www.paycoinly.xyz/docs/integrations/woocommerce
+
+[https://www.paycoinly.xyz/docs/integrations/woocommerce](https://www.paycoinly.xyz/docs/integrations/woocommerce)
 
 It provides some actions and filters which customize its functionalities to meet your business demand and pricing requirements.
-https://www.paycoinly.xyz/docs/appendix/wordpress-plugin-hooks
+
+[https://www.paycoinly.xyz/docs/appendix/wordpress-plugin-hooks](https://www.paycoinly.xyz/docs/appendix/wordpress-plugin-hooks)
 
 ## Features
 
@@ -70,7 +73,7 @@ The plugin communicates with the Paycoiny API in the following scenarios:
 
 = 1.0.0 =
 
-*Release Date - June 22 2026*
+*August 17 2026*
 * Initial launch
 
  == Upgrade Notice ==
